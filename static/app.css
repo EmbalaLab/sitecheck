@@ -1,5 +1,5 @@
 /* EmbalaLab SiteCheck — visual direction "Cartel" (poster), chosen by Aron 2026-10-12 over the design-system mode-core skin.
-   One strong colour (ultramarine), ink and paper, Archivo in heavy weights, big numbers, hard rules. Light and dark.
+   One strong colour (ultramarine), ink and paper, Archivo in heavy weights, big numbers, hard rules. Light by default; dark only when the reader picks it (data-theme="dark").
    This is a deliberate deviation from shared/design-system/embalalab (vivid accent, grotesk display). */
 @import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,75..125,400..900;1,75..125,400..900&display=swap");
 :root{
@@ -13,7 +13,6 @@
   --font:"Archivo",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,Menlo,Consolas,monospace;
   --focus:0 0 0 2px var(--paper),0 0 0 4px var(--c);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0E0E0E;--ink:#F2F0EA;--ink-2:rgba(242,240,234,.75);--ink-3:rgba(242,240,234,.55);--rule:#F2F0EA;--rule-soft:rgba(242,240,234,.2);--well:rgba(242,240,234,.1);--c:#2A58F2;--ok:#7D9BFF;--warn:#F5B301;--fail:#FF6B57;--block:#1A1A1A;--block-ink:#F2F0EA;--viz-site:#2A58F2;--viz-site-fill:rgba(42,88,242,.92);--viz-avg:#F2F0EA;--viz-std:#F2F0EA;--viz-grid:rgba(242,240,234,.22);--viz-bar:#2A58F2;--viz-track:rgba(242,240,234,.12);--bezel:#2A2A2A}}
 :root[data-theme="dark"]{--paper:#0E0E0E;--ink:#F2F0EA;--ink-2:rgba(242,240,234,.75);--ink-3:rgba(242,240,234,.55);--rule:#F2F0EA;--rule-soft:rgba(242,240,234,.2);--well:rgba(242,240,234,.1);--c:#2A58F2;--ok:#7D9BFF;--warn:#F5B301;--fail:#FF6B57;--block:#1A1A1A;--block-ink:#F2F0EA;--viz-site:#2A58F2;--viz-site-fill:rgba(42,88,242,.92);--viz-avg:#F2F0EA;--viz-std:#F2F0EA;--viz-grid:rgba(242,240,234,.22);--viz-bar:#2A58F2;--viz-track:rgba(242,240,234,.12);--bezel:#2A2A2A}
 
 /* ---------------------------------------------------------------- base --- */
@@ -39,7 +38,6 @@ a:hover{color:var(--c)}
 .ctrls button.on,.ctrls button:hover{opacity:1}
 .ctrls .theme{border-left:1px solid rgba(242,240,234,.25)}
 .theme .moon{display:none}.theme .sun{display:inline}html[data-theme="dark"] .theme .moon{display:inline}html[data-theme="dark"] .theme .sun{display:none}
-@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .theme .moon{display:inline}html:not([data-theme="light"]) .theme .sun{display:none}}
 
 /* ---------------------------------------------------------------- hero --- */
 .hero{background:var(--c);color:var(--c-ink);padding:40px 40px 36px;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:40px;align-items:end}

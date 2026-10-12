@@ -4,10 +4,10 @@
   var setLang=function(l){b.setAttribute('data-lang',l);h.lang=l;document.querySelectorAll('.lang button').forEach(function(x){x.classList.toggle('on',x.dataset.lang===l)});try{localStorage.setItem('sc-lang',l)}catch(e){}};
   document.querySelectorAll('.lang button').forEach(function(x){x.addEventListener('click',function(){setLang(x.dataset.lang)})});
   var l='es';try{l=localStorage.getItem('sc-lang')||l}catch(e){}setLang(l);
-  /* theme: follows the system until the person taps the toggle; then light/dark is remembered */
-  var applyTheme=function(t){if(t){h.setAttribute('data-theme',t)}else{h.removeAttribute('data-theme')}};
+  /* theme: light is the default; dark only when the person taps the toggle, and that choice is remembered */
+  var applyTheme=function(t){if(t==='dark'){h.setAttribute('data-theme','dark')}else{h.removeAttribute('data-theme')}};
   var t=null;try{t=localStorage.getItem('sc-theme')||null}catch(e){}applyTheme(t);
-  var tb=document.getElementById('theme');if(tb){tb.addEventListener('click',function(){var dark=h.getAttribute('data-theme')==='dark'||(!h.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);var n=dark?'light':'dark';applyTheme(n);try{localStorage.setItem('sc-theme',n)}catch(e){}})}
+  var tb=document.getElementById('theme');if(tb){tb.addEventListener('click',function(){var n=h.getAttribute('data-theme')==='dark'?'light':'dark';applyTheme(n);try{localStorage.setItem('sc-theme',n)}catch(e){}})}
   /* fit a one-line heading (the domain) into its column; below 34px it is allowed to wrap */
   var fit=function(){document.querySelectorAll('h1[data-fit]').forEach(function(el){el.classList.remove('wrap');el.style.fontSize='';var max=parseFloat(getComputedStyle(el).fontSize),size=max;while(el.scrollWidth>el.clientWidth&&size>34){size-=2;el.style.fontSize=size+'px'}if(el.scrollWidth>el.clientWidth){el.classList.add('wrap')}})};
   fit();window.addEventListener('resize',fit);if(document.fonts&&document.fonts.ready){document.fonts.ready.then(fit)}
