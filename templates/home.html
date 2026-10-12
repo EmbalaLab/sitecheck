@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es" class="mode-core">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,13 +12,9 @@
 <div class="page">
 {% include "_top.html" %}
 
-<section class="sec first">
-  <aside class="marg">
-    <span class="n">SiteCheck</span>
-    <span class="t"><span class="es">Un diagnóstico de su web, en un minuto</span><span class="en">A diagnosis of your website, in one minute</span></span>
-    <p><span class="es">Gratis, sin registro. Hecho desde Alhaurín de la Torre.</span><span class="en">Free, no sign-up. Made in Alhaurín de la Torre.</span></p>
-  </aside>
-  <div class="body">
+<section class="hero">
+  <div>
+    <p class="k"><span class="es">Diagnóstico en un minuto · gratis · sin registro · hecho en Alhaurín de la Torre</span><span class="en">One-minute diagnosis · free · no sign-up · made in Alhaurín de la Torre</span></p>
     <h1><span class="es">¿Qué le está costando clientes su web?</span><span class="en">What is your website costing you?</span></h1>
     <p class="lead"><span class="es">Escriba la dirección. Miramos la portada como la ve un cliente en el móvil, Google y los asistentes de IA, y le decimos qué falla, por orden de lo que cuesta.</span><span class="en">Type the address. We look at the home page the way a customer on a phone, Google and AI assistants see it, and tell you what fails, in order of what it costs.</span></p>
     <form id="f" class="audit" autocomplete="off">
@@ -34,11 +30,8 @@
   </div>
 </section>
 
-<section class="sec">
-  <aside class="marg">
-    <span class="n">§ 1</span>
-    <span class="t"><span class="es">Qué comprobamos</span><span class="en">What we check</span></span>
-  </aside>
+<section class="sec first" style="padding-top:48px">
+  <div class="n">01<b><span class="es">Qué comprobamos</span><span class="en">What we check</span></b></div>
   <div class="body">
     <ol class="what">
       <li><span><b><span class="es">Seguridad</span><span class="en">Security</span></b><span class="d"><span class="es">Si carga segura (https), si el certificado vale y cuándo caduca.</span><span class="en">Whether it loads securely (https), whether the certificate is valid and when it expires.</span></span></span></li>
@@ -53,21 +46,19 @@
 
 {% if examples %}
 <section class="sec">
-  <aside class="marg">
-    <span class="n">§ 2</span>
-    <span class="t"><span class="es">Así es un diagnóstico</span><span class="en">What a diagnosis looks like</span></span>
-    <p><span class="es">Resultados reales de este mismo servicio, tal cual se midieron.</span><span class="en">Real results from this same service, exactly as measured.</span></p>
-  </aside>
+  <div class="n">02<b><span class="es">Así es un diagnóstico</span><span class="en">What a diagnosis looks like</span></b>
+    <p class="caps"><span class="es">Resultados reales de este mismo servicio, tal cual se midieron.</span><span class="en">Real results from this same service, exactly as measured.</span></p>
+  </div>
   <div class="body">
     <ul class="examples">
       {% for e in examples %}
       <li><a class="ex" href="/r/{{ e.id }}">
-        {% if e.shot %}<span class="thumb"><img src="{{ e.shot }}" alt="" loading="lazy" width="64" height="118"></span>{% else %}<span class="thumb none"><span class="es">sin captura</span><span class="en">no screenshot</span></span>{% endif %}
+        {% if e.shot %}<span class="thumb"><img src="{{ e.shot }}" alt="" loading="lazy" width="72" height="132"></span>{% else %}<span class="thumb none"><span class="es">sin captura</span><span class="en">no screenshot</span></span>{% endif %}
         <span>
           <span class="host">{{ e.host }}</span>
           <span class="v"><span class="es">{{ e.verdict.es }}</span><span class="en">{{ e.verdict.en }}</span></span>
-          {% if e.scores and e.scores.seo is not none %}<span class="sc">{% for k, es, en in [("seo", "Google y SEO", "Google and SEO"), ("ai", "IA", "AI"), ("speed", "Velocidad", "Speed")] %}{% set v = e.scores[k] %}<span><span class="es">{{ es }}</span><span class="en">{{ en }}</span> <b>{{ v if v is not none else '—' }}</b></span>{% endfor %}</span>{% endif %}
-          <span class="date"><span class="es">Medido el {{ e.date }}.</span><span class="en">Measured on {{ e.date }}.</span></span>
+          {% if e.scores and e.scores.seo is not none %}<span class="sc">{% for k, es, en in [("seo", "Google y SEO", "Google and SEO"), ("ai", "IA", "AI"), ("speed", "Velocidad", "Speed")] %}{% set v = e.scores[k] %}<span><span class="es">{{ es }}</span><span class="en">{{ en }}</span><b>{{ v if v is not none else '—' }}</b></span>{% endfor %}</span>{% endif %}
+          <span class="date"><span class="es">Medido el {{ e.date }}</span><span class="en">Measured on {{ e.date }}</span></span>
         </span>
       </a></li>
       {% endfor %}

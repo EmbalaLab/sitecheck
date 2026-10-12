@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es" class="mode-core">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,65 +14,62 @@
 {% set sc = r.panels.scores if r.panels else {} %}
 {% set t = r.summary.tech %}
 
-<section class="sec first swap">
-  <aside class="marg">
-    <span class="n">{{ a.checkedAt[:10] }} · {{ (a.elapsedMs / 1000) | round(0) | int }} s</span>
-    <span class="t"><span class="es">Diagnóstico en un minuto</span><span class="en">One-minute diagnosis</span></span>
-    <p><span class="es">Comprobado desde fuera, sin acceso a la web. <a href="/?url={{ a.host }}&force=1">Volver a comprobar</a></span><span class="en">Checked from the outside, with no access to the site. <a href="/?url={{ a.host }}&force=1">Check again</a></span></p>
-    <dl>
-      <dt><span class="es">Plataforma</span><span class="en">Platform</span></dt><dd>{{ t.cms or '—' }}{% if t.builder %} · {{ t.builder }}{% endif %}</dd>
-      <dt><span class="es">Servidor</span><span class="en">Server</span></dt><dd>{{ t.server or '—' }}{% if t.cdn %} · {{ t.cdn }}{% endif %}</dd>
-      <dt><span class="es">Alojamiento</span><span class="en">Hosting</span></dt><dd>{{ t.hostingHint or t.ip or '—' }}</dd>
-      <dt><span class="es">Correo</span><span class="en">Mail</span></dt><dd>{{ t.mail or '—' }}</dd>
-      <dt><span class="es">Carga móvil</span><span class="en">Phone load</span></dt><dd>{% if a.render and a.render.phone and a.render.phone.loadMs %}{{ (a.render.phone.loadMs / 1000) | round(1) }} s{% else %}—{% endif %}</dd>
-    </dl>
-  </aside>
-  <div class="body">
-    <h1>{{ a.host }}</h1>
+<section class="hero">
+  <div>
+    <p class="k"><span class="es">Diagnóstico en un minuto · {{ a.checkedAt[:10] }} · {{ (a.elapsedMs / 1000) | round(0) | int }} s · desde fuera, sin acceso a la web · <a href="/?url={{ a.host }}&force=1">volver a comprobar</a></span><span class="en">One-minute diagnosis · {{ a.checkedAt[:10] }} · {{ (a.elapsedMs / 1000) | round(0) | int }} s · from the outside, with no access to the site · <a href="/?url={{ a.host }}&force=1">check again</a></span></p>
+    <h1 data-fit>{{ a.host }}</h1>
     <p class="verdict"><span class="es">{{ r.summary.verdict.es }}</span><span class="en">{{ r.summary.verdict.en }}</span></p>
-    {% if sc and sc.seo is not none %}
-    <p class="scores">
-      {% for key, es, en in [("seo", "Google y SEO", "Google and SEO"), ("ai", "Asistentes de IA", "AI assistants"), ("speed", "Velocidad y móvil", "Speed and mobile")] %}{% set v = sc[key] %}
-      <span class="s"><span class="es">{{ es }}</span><span class="en">{{ en }}</span><b>{% if v is not none %}{{ v }}<small>/100</small>{% else %}—{% endif %}</b></span>
-      {% endfor %}
-    </p>
-    {% endif %}
-    <p class="countline"><span class="dot high"></span><b>{{ r.summary.counts.high }}</b> <span class="es">graves</span><span class="en">serious</span>, &nbsp;<span class="dot medium"></span><b>{{ r.summary.counts.medium }}</b> <span class="es">importantes</span><span class="en">important</span>, &nbsp;<span class="dot"></span><b>{{ r.summary.counts.low }}</b> <span class="es">detalles</span><span class="en">details</span>.</p>
   </div>
+  {% if sc and sc.seo is not none %}
+  <div class="big">
+    {% for key, es, en in [("seo", "Google y SEO", "Google and SEO"), ("ai", "Asistentes de IA", "AI assistants"), ("speed", "Velocidad y móvil", "Speed and mobile")] %}{% set v = sc[key] %}
+    <div><span><span class="es">{{ es }}</span><span class="en">{{ en }}</span></span><b>{% if v is not none %}{{ v }}<small>/100</small>{% else %}—{% endif %}</b></div>
+    {% endfor %}
+  </div>
+  {% endif %}
 </section>
+<div class="strip">
+  <div class="high"><span class="es">Graves</span><span class="en">Serious</span><b>{{ r.summary.counts.high }}</b></div>
+  <div class="medium"><span class="es">Importantes</span><span class="en">Important</span><b>{{ r.summary.counts.medium }}</b></div>
+  <div><span class="es">Detalles</span><span class="en">Details</span><b>{{ r.summary.counts.low }}</b></div>
+</div>
 
-<section class="sec swap">
-  <aside class="marg">
-    <span class="n">§ 1</span>
+<section class="sec first">
+  <div class="n">01<b><span class="es">Comparado con el estándar y la media local</span><span class="en">Compared with the standard and the local average</span></b>
+    {% if c.radar %}<p class="caps"><span class="es">Seis áreas, de 0 a 100. Sólido: esta web. Línea: media local. Punteado: el estándar. Toque un vértice para ver qué se midió.</span><span class="en">Six areas, 0 to 100. Solid: this site. Line: local average. Dashed: the standard. Tap a vertex to see what was measured.</span></p>{% endif %}
     {% if shots['phone-fold'] %}
     <figure class="phone">
       <div class="bezel"><img src="{{ shots['phone-fold'] }}" alt="Home page on an emulated phone" width="412" height="915" loading="eager"></div>
       <figcaption><span class="es">Portada en un móvil emulado (Pixel 7).</span><span class="en">Home page on an emulated phone (Pixel 7).</span>{% if shots['phone-full'] %} <a href="{{ shots['phone-full'] }}" target="_blank" rel="noopener"><span class="es">Página completa ↗</span><span class="en">Full page ↗</span></a>{% endif %}</figcaption>
     </figure>
     {% endif %}
-  </aside>
+    <dl>
+      <dt><span class="es">Plataforma</span><span class="en">Platform</span></dt><dd>{{ t.cms or '—' }}{% if t.builder %} · {{ t.builder }}{% endif %}</dd>
+      <dt><span class="es">Servidor</span><span class="en">Server</span></dt><dd>{{ t.server or '—' }}{% if t.cdn %} · {{ t.cdn }}{% endif %}</dd>
+      <dt><span class="es">Alojamiento</span><span class="en">Hosting</span></dt><dd>{{ t.hostingHint or t.ip or '—' }}</dd>
+      <dt><span class="es">Correo</span><span class="en">Mail</span></dt><dd>{{ t.mail or '—' }}</dd>
+    </dl>
+  </div>
   <div class="body">
-    <h2><span class="es">Comparado con el estándar y con la media local</span><span class="en">Compared with the standard and the local average</span></h2>
     {% if c.radar %}{% set R = c.radar %}
-    <p class="lede"><span class="es">Seis áreas, de 0 a 100. Bajo cada área: esta web · media local. Pase el cursor por un vértice para ver qué se midió.</span><span class="en">Six areas, 0 to 100. Under each area: this site · local average. Hover a vertex to see what was measured.</span></p>
-    <div class="radar">
-      <svg viewBox="0 0 {{ R.width }} {{ R.height }}" role="img" aria-labelledby="radar-title" aria-describedby="radar-table">
+    <div class="cmp">
+      <svg viewBox="0 0 {{ R.width }} {{ R.height }}" class="radar" role="img" aria-labelledby="radar-title" aria-describedby="radar-table">
         <title id="radar-title">Radar: esta web, estándar y media local / this site, standard and local average</title>
         {% for ring in R.rings %}<polygon class="ring" points="{{ ring }}"/>{% endfor %}
         {% for x1, y1, x2, y2 in R.spokes %}<line class="spoke" x1="{{ x1 }}" y1="{{ y1 }}" x2="{{ x2 }}" y2="{{ y2 }}"/>{% endfor %}
         <polygon class="std" points="{{ R.standard }}"/>
-        {% if R.avg %}<polygon class="avg" points="{{ R.avg }}"/>{% for l in R.labels if l.ax is not none %}<circle class="avgdot" cx="{{ l.ax }}" cy="{{ l.ay }}" r="3.5"/>{% endfor %}{% endif %}
         {% if R.site %}<polygon class="site" points="{{ R.site }}"/>{% endif %}
+        {% if R.avg %}<polygon class="avg" points="{{ R.avg }}"/>{% for l in R.labels if l.ax is not none %}<circle class="avgdot" cx="{{ l.ax }}" cy="{{ l.ay }}" r="3.5"/>{% endfor %}{% endif %}
         {% for l in R.labels %}
-        <text class="axl" x="{{ l.x }}" y="{{ l.y }}" text-anchor="{{ l.anchor }}"><tspan class="es">{{ l.es }}</tspan><tspan class="en">{{ l.en }}</tspan></text>
-        <text class="axv" x="{{ l.x }}" y="{{ l.y + 15 }}" text-anchor="{{ l.anchor }}"><tspan class="s">{{ l.site if l.site is not none else 'n/d' }}</tspan>{% if l.avg is not none %} · {{ l.avg }}{% endif %}</text>
+        <text class="axl" x="{{ l.x }}" y="{{ l.y - 6 }}" text-anchor="{{ l.anchor }}"><tspan class="es">{{ l.es }}</tspan><tspan class="en">{{ l.en }}</tspan></text>
+        <text class="axv" x="{{ l.x }}" y="{{ l.y + 16 }}" text-anchor="{{ l.anchor }}">{{ l.site if l.site is not none else 'n/d' }}{% if l.avg is not none %}<tspan class="m"> / {{ l.avg }}</tspan>{% endif %}</text>
         {% if l.px is not none %}
-        <g class="vx" tabindex="0" data-tip="tip-{{ l.key }}" aria-describedby="tip-{{ l.key }}"><circle class="hit" cx="{{ l.px }}" cy="{{ l.py }}" r="14"/><circle class="sitedot" cx="{{ l.px }}" cy="{{ l.py }}" r="4.5"/><title>{{ l.es }} / {{ l.en }}: {{ l.site }}{% if l.avg is not none %} · media local / local average {{ l.avg }}{% endif %} · estándar / standard 100</title></g>
+        <g class="vx" tabindex="0" data-tip="tip-{{ l.key }}" aria-describedby="tip-{{ l.key }}"><circle class="hit" cx="{{ l.px }}" cy="{{ l.py }}" r="14"/><circle class="sitedot" cx="{{ l.px }}" cy="{{ l.py }}" r="4"/><title>{{ l.es }} / {{ l.en }}: {{ l.site }}{% if l.avg is not none %} · media local / local average {{ l.avg }}{% endif %} · estándar / standard 100</title></g>
         {% endif %}
         {% endfor %}
       </svg>
       <ul class="legend">
-        <li><span class="k site"></span><span><b>{{ a.host }}</b><span class="n"><span class="es">Medido una vez el {{ a.checkedAt[:10] }}.</span><span class="en">Measured once on {{ a.checkedAt[:10] }}.</span></span></span></li>
+        <li><span class="k"></span><span><b>{{ a.host }}</b><span class="n"><span class="es">Medido una vez el {{ a.checkedAt[:10] }}.</span><span class="en">Measured once on {{ a.checkedAt[:10] }}.</span></span></span></li>
         {% if bench and R.avg %}
         <li><span class="k avg"></span><span><b><span class="es">Media local</span><span class="en">Local average</span></b><span class="n"><span class="es">Media de {{ bench.n }} webs de la {{ bench.region }}, medida el {{ bench.asOf }} con esta misma herramienta.</span><span class="en">Average of {{ bench.n }} websites in the province of Málaga, measured on {{ bench.asOf }} with this same tool.</span></span></span></li>
         {% endif %}
@@ -104,11 +101,9 @@
 
 {% if r.findings %}
 <section class="sec">
-  <aside class="marg">
-    <span class="n">§ 2</span>
-    <span class="t"><span class="es">Qué encontramos, por orden de lo que cuesta</span><span class="en">What we found, in order of what it costs</span></span>
-    <p><span class="es">{{ r.findings | length }} hallazgo{{ 's' if r.findings | length != 1 else '' }}. Cada uno dice lo que vimos, por qué importa y cómo comprobarlo usted mismo.</span><span class="en">{{ r.findings | length }} finding{{ 's' if r.findings | length != 1 else '' }}. Each one says what we saw, why it matters and how to check it yourself.</span></p>
-  </aside>
+  <div class="n">02<b><span class="es">Qué encontramos</span><span class="en">What we found</span></b>
+    <p class="caps"><span class="es">Por orden de lo que cuesta. {{ r.findings | length }} hallazgo{{ 's' if r.findings | length != 1 else '' }}: lo que vimos, por qué importa y cómo comprobarlo usted mismo.</span><span class="en">In order of what it costs. {{ r.findings | length }} finding{{ 's' if r.findings | length != 1 else '' }}: what we saw, why it matters and how to check it yourself.</span></p>
+  </div>
   <div class="body">
     <ol class="findings">
       {% for f in r.findings %}
@@ -116,7 +111,7 @@
         <span class="num" aria-hidden="true"></span>
         <div>
           <h3><span class="es">{{ f.es.title }}</span><span class="en">{{ f.en.title }}</span></h3>
-          <p class="sevline"><span class="dot"></span>{% if f.severity == 'high' %}<span class="es">Grave</span><span class="en">Serious</span>{% elif f.severity == 'medium' %}<span class="es">Importante</span><span class="en">Important</span>{% else %}<span class="es">Detalle</span><span class="en">Detail</span>{% endif %}</p>
+          <span class="sev {{ f.severity }}">{% if f.severity == 'high' %}<span class="es">Grave</span><span class="en">Serious</span>{% elif f.severity == 'medium' %}<span class="es">Importante</span><span class="en">Important</span>{% else %}<span class="es">Detalle</span><span class="en">Detail</span>{% endif %}</span>
           <p class="saw"><strong><span class="es">Lo que vimos.</span><span class="en">What we saw.</span></strong> <span class="es">{{ f.es.saw }}</span><span class="en">{{ f.en.saw }}</span></p>
           <p class="why"><strong><span class="es">Por qué importa.</span><span class="en">Why it matters.</span></strong> <span class="es">{{ f.es.why }}</span><span class="en">{{ f.en.why }}</span></p>
           <p class="see"><strong><span class="es">Compruébelo.</span><span class="en">See for yourself.</span></strong> <span class="es">{{ f.es.see }}</span><span class="en">{{ f.en.see }}</span>
@@ -131,47 +126,40 @@
 
 {% if c.bullets %}
 <section class="sec">
-  <aside class="marg">
-    <span class="n">§ 3</span>
-    <span class="t"><span class="es">Velocidad, en cifras</span><span class="en">Speed, in figures</span></span>
-    <p><span class="es">Una medición en un móvil emulado. La barra es esta web; las franjas son los umbrales (bien, mejorable, mal); la marca es la mediana local.</span><span class="en">One measurement on an emulated phone. The bar is this site; the bands are the thresholds (good, needs work, poor); the tick is the local median.</span></p>
-  </aside>
-  <div class="body bullets">
+  <div class="n">03<b><span class="es">Velocidad, en cifras</span><span class="en">Speed, in figures</span></b>
+    <p class="caps"><span class="es">Una medición en un móvil emulado. Barra: esta web. Marca: mediana local. Punteado: umbrales (bien, mejorable, mal).</span><span class="en">One measurement on an emulated phone. Bar: this site. Tick: local median. Dashed: thresholds (good, needs work, poor).</span></p>
+  </div>
+  <div class="body spd">
     {% for b in c.bullets %}
-    <div class="b">
-      <div class="lbl"><span class="es">{{ b.es }}</span><span class="en">{{ b.en }}</span>
-        <span class="v {{ b.status or '' }}"><span class="es">{{ b.valueEs }}</span><span class="en">{{ b.valueEn }}</span>{% if b.status %}<span class="st">{% if b.status == 'ok' %}<span class="es">bien</span><span class="en">good</span>{% elif b.status == 'warn' %}<span class="es">mejorable</span><span class="en">needs work</span>{% else %}<span class="es">mal</span><span class="en">poor</span>{% endif %}</span>{% endif %}</span>
+    <div class="row">
+      <div class="lbl"><span class="es">{{ b.es }}</span><span class="en">{{ b.en }}</span>{% if b.status %}<em class="{{ b.status }}">{% if b.status == 'ok' %}<span class="es">bien</span><span class="en">good</span>{% elif b.status == 'warn' %}<span class="es">mejorable</span><span class="en">needs work</span>{% else %}<span class="es">mal</span><span class="en">poor</span>{% endif %}</em>{% endif %}
+        <b><span class="es">{{ b.valueEs }}</span><span class="en">{{ b.valueEn }}</span></b>
       </div>
       <div class="track" role="img" aria-label="{{ b.en }}: {{ b.valueEn }}; good up to {{ b.goodEn }}, poor beyond {{ b.poorEn }}{% if b.median is not none %}; local median {{ b.medianEn }}{% endif %}">
-        <div class="band good" style="width:{{ b.goodPc }}%"></div>
-        <div class="band warn" style="left:{{ b.goodPc }}%;width:{{ b.poorPc - b.goodPc }}%"></div>
-        <div class="band poor" style="left:{{ b.poorPc }}%"></div>
         {% if b.valuePc is not none %}<div class="bar" style="width:{{ b.valuePc }}%"></div>{% endif %}
-        {% if b.medianPc is not none %}<div class="med" style="left:{{ b.medianPc }}%"><i></i></div><span class="t med-l {{ 'right' if b.medianPc > 70 else '' }}" style="left:{{ b.medianPc }}%"><span class="es">mediana local {{ b.medianEs }}</span><span class="en">local median {{ b.medianEn }}</span></span>{% endif %}
-        <span class="t" style="left:{{ b.goodPc }}%"><span class="es">{{ b.goodEs }}</span><span class="en">{{ b.goodEn }}</span></span>
-        <span class="t" style="left:{{ b.poorPc }}%"><span class="es">{{ b.poorEs }}</span><span class="en">{{ b.poorEn }}</span></span>
+        <span class="th" style="left:{{ b.goodPc }}%"><span><span class="es">{{ b.goodEs }}</span><span class="en">{{ b.goodEn }}</span></span></span>
+        <span class="th" style="left:{{ b.poorPc }}%"><span><span class="es">{{ b.poorEs }}</span><span class="en">{{ b.poorEn }}</span></span></span>
+        {% if b.medianPc is not none %}<div class="med" style="left:{{ b.medianPc }}%"></div><span class="med-l {{ 'right' if b.medianPc > 70 else '' }}" style="left:{{ b.medianPc }}%"><span class="es">mediana local {{ b.medianEs }}</span><span class="en">local median {{ b.medianEn }}</span></span>{% endif %}
       </div>
     </div>
     {% endfor %}
-    <p class="foot">{% if bench and bench.metrics and bench.metrics.lcpMs %}<span class="es">Mediana local: {{ bench.metrics.lcpMs.n }} webs de la provincia de Málaga, medidas el {{ bench.asOf }} con esta misma herramienta.</span><span class="en">Local median: {{ bench.metrics.lcpMs.n }} websites in the province of Málaga, measured on {{ bench.asOf }} with this same tool.</span> {% endif %}<span class="es">Umbrales: LCP según Google (bien ≤ 2,5 s, mal &gt; 4 s); carga, peso y respuesta del servidor son nuestros límites, los mismos de la tarjeta de velocidad.</span><span class="en">Thresholds: LCP per Google (good ≤ 2.5 s, poor &gt; 4 s); load, weight and server response are our own limits, the same ones the speed scorecard uses.</span></p>
+    <p class="spdnote">{% if bench and bench.metrics and bench.metrics.lcpMs %}<span class="es">Mediana local: {{ bench.metrics.lcpMs.n }} webs de la provincia de Málaga, medidas el {{ bench.asOf }} con esta misma herramienta.</span><span class="en">Local median: {{ bench.metrics.lcpMs.n }} websites in the province of Málaga, measured on {{ bench.asOf }} with this same tool.</span> {% endif %}<span class="es">Umbrales: LCP según Google (bien ≤ 2,5 s, mal &gt; 4 s); carga, peso y respuesta del servidor son nuestros límites, los mismos de la tarjeta de velocidad.</span><span class="en">Thresholds: LCP per Google (good ≤ 2.5 s, poor &gt; 4 s); load, weight and server response are our own limits, the same ones the speed scorecard uses.</span></p>
   </div>
 </section>
 {% endif %}
 
 {% if r.panels and r.panels.scores %}
 <section class="sec">
-  <aside class="marg">
-    <span class="n">§ 4</span>
-    <span class="t"><span class="es">Las comprobaciones, una a una</span><span class="en">The checks, one by one</span></span>
-    <p class="pnote"><span class="es">Puntuación = comprobaciones superadas sobre las que se pudieron hacer. No es una nota de Google; es nuestra lista, medida una vez.{% if bench %} «Webs de Málaga» = {{ bench.n }} webs de negocios de la provincia medidas el {{ bench.asOf }} con esta herramienta.{% endif %}</span><span class="en">Score = checks passed over checks that could run. Not a Google grade; our list, measured once.{% if bench %} "Málaga sites" = {{ bench.n }} business websites in the province measured on {{ bench.asOf }} with this tool.{% endif %}</span></p>
-  </aside>
+  <div class="n">04<b><span class="es">Las comprobaciones, una a una</span><span class="en">The checks, one by one</span></b>
+    <p><span class="es">Puntuación = comprobaciones superadas sobre las que se pudieron hacer. No es una nota de Google; es nuestra lista, medida una vez.{% if bench %} «Webs de Málaga» = {{ bench.n }} webs de negocios de la provincia medidas el {{ bench.asOf }} con esta herramienta.{% endif %}</span><span class="en">Score = checks passed over checks that could run. Not a Google grade; our list, measured once.{% if bench %} "Málaga sites" = {{ bench.n }} business websites in the province measured on {{ bench.asOf }} with this tool.{% endif %}</span></p>
+  </div>
   <div class="body">
     {% for key, title_es, title_en in [("seo", "Google y SEO básico", "Google and SEO basics"), ("ai", "Listo para asistentes de IA", "Ready for AI assistants"), ("speed", "Velocidad y móvil", "Speed and mobile")] %}
     {% set rows = r.panels[key] %}{% set s = r.panels.scores[key] %}
     <details class="panel" {% if key == "seo" %}open{% endif %}>
       <summary><span class="ptitle"><span class="es">{{ title_es }}</span><span class="en">{{ title_en }}</span></span>{% if s is not none %}<span class="score {{ 'good' if s >= 80 else 'mid' if s >= 50 else 'bad' }}"><b>{{ s }}</b> / 100</span>{% endif %}</summary>
       <ul class="checks">
-        {% for row in rows %}{% set rt = c.rates.get(row.key) %}<li class="{{ row.status }}"><span class="ic">{% if row.status == 'ok' %}✓{% elif row.status == 'warn' %}!{% elif row.status == 'fail' %}✕{% else %}–{% endif %}</span><span class="lbl"><span class="es">{{ row.es }}</span><span class="en">{{ row.en }}</span></span>{% if row.value %}<span class="val">{{ row.value }}</span>{% endif %}{% if rt %}<span class="rate"><span class="es">Lo cumplen el {{ rt.pct }} % de {{ rt.n }} webs de Málaga.</span><span class="en">{{ rt.pct }}% of {{ rt.n }} Málaga sites pass this.</span></span>{% endif %}</li>{% endfor %}
+        {% for row in rows %}{% set rt = c.rates.get(row.key) %}<li class="{{ row.status }}"><span class="ic">{% if row.status == 'ok' %}✓{% elif row.status == 'warn' %}!{% elif row.status == 'fail' %}✕{% else %}–{% endif %}</span><span class="lbl"><span class="es">{{ row.es }}</span><span class="en">{{ row.en }}</span></span>{% if row.value %}<span class="val">{{ row.value }}</span>{% endif %}{% if rt %}<span class="rate"><span class="es">Lo cumplen el {{ rt.pct }} % de {{ rt.n }} webs de Málaga</span><span class="en">{{ rt.pct }}% of {{ rt.n }} Málaga sites pass this</span></span>{% endif %}</li>{% endfor %}
       </ul>
     </details>
     {% endfor %}
@@ -180,11 +168,8 @@
 {% endif %}
 
 <section class="sec">
-  <aside class="marg">
-    <span class="n">§ {{ 5 if r.panels and r.panels.scores else 3 }}</span>
-    <span class="t"><span class="es">Lo que ya está bien, y lo que esta prueba no ve</span><span class="en">What is already fine, and what this test does not see</span></span>
-  </aside>
-  <div class="body prose">
+  <div class="n">{{ '05' if r.panels and r.panels.scores else '03' }}<b><span class="es">Lo que ya está bien, y lo que esta prueba no ve</span><span class="en">What is already fine, and what this test does not see</span></b></div>
+  <div class="body">
     {% if r.good %}
     <ul class="goodlist">{% for g in r.good %}<li><span class="es">{{ g.es }}</span><span class="en">{{ g.en }}</span></li>{% endfor %}</ul>
     {% endif %}
@@ -192,17 +177,12 @@
   </div>
 </section>
 
-<section class="sec">
-  <aside class="marg">
-    <span class="n">—</span>
-  </aside>
-  <div class="body sign">
-    <p><span class="es">Hecho por <strong>Aron Lobo</strong>, desarrollador en Alhaurín de la Torre. Si quiere que arregle algo de esta lista, escríbame con el nombre del hallazgo y le digo hoy mismo cuánto tiempo lleva.</span><span class="en">Made by <strong>Aron Lobo</strong>, developer in Alhaurín de la Torre. If you want something on this list fixed, write to me with the name of the finding and I will tell you today how long it takes.</span></p>
-    <p class="who">Aron Lobo, <i>EmbalaLab</i></p>
-    <p class="contact"><a href="mailto:aronlobo@embalalab.com">aronlobo@embalalab.com</a> <a href="https://wa.me/34682453682">WhatsApp</a> <a href="https://www.linkedin.com/in/aron-lobo">LinkedIn</a></p>
-    <details class="raw" style="margin-top:28px"><summary><span class="es">Datos medidos (técnico)</span><span class="en">Measured data (technical)</span></summary><pre>{{ raw }}</pre></details>
-  </div>
+<section class="sign">
+  <p><span class="es">Hecho por <strong>Aron Lobo</strong>, desarrollador en Alhaurín de la Torre. Si quiere que arregle algo de esta lista, escríbame con el nombre del hallazgo y le digo hoy mismo cuánto tiempo lleva.</span><span class="en">Made by <strong>Aron Lobo</strong>, developer in Alhaurín de la Torre. If you want something on this list fixed, write to me with the name of the finding and I will tell you today how long it takes.</span></p>
+  <p class="who">Aron Lobo</p>
+  <p class="contact"><a href="mailto:aronlobo@embalalab.com">aronlobo@embalalab.com</a> <a href="https://wa.me/34682453682">WhatsApp</a> <a href="https://www.linkedin.com/in/aron-lobo">LinkedIn</a></p>
 </section>
+<details class="raw"><summary><span class="es">Datos medidos (técnico)</span><span class="en">Measured data (technical)</span></summary><pre>{{ raw }}</pre></details>
 
 <footer class="foot"><span><span class="es">Los datos de esta página se midieron una vez y no se guardan en ningún otro sitio.</span><span class="en">The data on this page was measured once and is stored nowhere else.</span></span><span class="rf">EmbalaLab SiteCheck · Alhaurín de la Torre</span></footer>
 </div>

@@ -35,7 +35,7 @@ def fmt(key: str, v: float | None, lang: str = "es") -> str:
     return f"{int(round(v))} ms"
 
 
-def radar(axes: dict, bench: dict | None, width: int = 440, height: int = 344, r: float = 104.0) -> dict:
+def radar(axes: dict, bench: dict | None, width: int = 520, height: int = 440, r: float = 140.0) -> dict:
     """Points for the three series on a hexagonal grid. Angles start at the top and go clockwise.
     The box is wider than tall so the side labels (anchored start/end) stay inside the viewBox."""
     cx, cy = width / 2, height / 2 + 2
@@ -51,7 +51,7 @@ def radar(axes: dict, bench: dict | None, width: int = 440, height: int = 344, r
     labels = []
     for i, (key, es, en) in enumerate(AXES):
         ang = -math.pi / 2 + i * 2 * math.pi / n
-        lx, ly = cx + (r + 26) * math.cos(ang), cy + (r + 26) * math.sin(ang)
+        lx, ly = cx + (r + 34) * math.cos(ang), cy + (r + 34) * math.sin(ang)
         anchor = "middle" if abs(math.cos(ang)) < 0.3 else ("start" if math.cos(ang) > 0 else "end")
         site = (axes.get(key) or {}).get("score")
         avg = ((bench or {}).get("axes") or {}).get(key, {}).get("mean") if bench else None
