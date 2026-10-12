@@ -8,11 +8,17 @@
 <meta name="color-scheme" content="light dark">
 <style>{{ css | safe }}</style>
 </head>
-<body>
+<body class="home">
+<div class="page">
 {% include "_top.html" %}
-<main>
-  <section class="formwrap">
-    <p class="eyebrow"><span class="es">Gratis · sin registro · un minuto</span><span class="en">Free · no sign-up · one minute</span></p>
+
+<section class="sec first">
+  <aside class="marg">
+    <span class="n">SiteCheck</span>
+    <span class="t"><span class="es">Un diagnóstico de su web, en un minuto</span><span class="en">A diagnosis of your website, in one minute</span></span>
+    <p><span class="es">Gratis, sin registro. Hecho desde Alhaurín de la Torre.</span><span class="en">Free, no sign-up. Made in Alhaurín de la Torre.</span></p>
+  </aside>
+  <div class="body">
     <h1><span class="es">¿Qué le está costando clientes su web?</span><span class="en">What is your website costing you?</span></h1>
     <p class="lead"><span class="es">Escriba la dirección. Miramos la portada como la ve un cliente en el móvil, Google y los asistentes de IA, y le decimos qué falla, por orden de lo que cuesta.</span><span class="en">Type the address. We look at the home page the way a customer on a phone, Google and AI assistants see it, and tell you what fails, in order of what it costs.</span></p>
     <form id="f" class="audit" autocomplete="off">
@@ -20,47 +26,58 @@
       <input type="text" id="url" name="url" placeholder="minegocio.es" inputmode="url" required>
       <button class="go" type="submit"><span class="es">Diagnosticar</span><span class="en">Diagnose</span></button>
     </form>
+    <p class="fine"><span class="es">Solo la portada, una vez, desde fuera. No guardamos nada más que el resultado, y no pedimos su correo.</span><span class="en">Home page only, once, from the outside. We store nothing but the result, and we do not ask for your email.</span></p>
     <div class="status" id="status" aria-live="polite"></div>
     <ul class="steps" id="steps" hidden>
       <li data-s="dns">DNS</li><li data-s="variants">https</li><li data-s="cert"><span class="es">certificado</span><span class="en">certificate</span></li><li data-s="html">HTML</li><li data-s="robots">robots</li><li data-s="links"><span class="es">enlaces</span><span class="en">links</span></li><li data-s="render"><span class="es">móvil</span><span class="en">phone</span></li>
     </ul>
-  </section>
+  </div>
+</section>
 
-  <section class="homesec">
-    <h2><span class="es">Qué comprobamos</span><span class="en">What we check</span></h2>
-    <p class="sub"><span class="es">Solo la portada, una vez, desde fuera. No guardamos nada más que el resultado, y no pedimos su correo.</span><span class="en">Home page only, once, from the outside. We store nothing but the result, and we do not ask for your email.</span></p>
-    <div class="what">
-      <div class="card"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><h3><span class="es">Seguridad</span><span class="en">Security</span></h3><p><span class="es">Si carga segura (https), si el certificado vale y cuándo caduca.</span><span class="en">Whether it loads securely (https), whether the certificate is valid and when it expires.</span></p></div></div>
-      <div class="card"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg><div><h3><span class="es">Móvil y velocidad</span><span class="en">Mobile and speed</span></h3><p><span class="es">Cómo se ve y cuánto tarda en un móvil real emulado, con captura.</span><span class="en">How it looks and how long it takes on an emulated real phone, with a screenshot.</span></p></div></div>
-      <div class="card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.7a2 2 0 0 1 1.7 2z"/></svg><div><h3><span class="es">Contacto</span><span class="en">Contact</span></h3><p><span class="es">Si se puede llamar o escribir por WhatsApp con un toque.</span><span class="en">Whether you can call or WhatsApp with one tap.</span></p></div></div>
-      <div class="card"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><div><h3>Google</h3><p><span class="es">Lo que Google lee: título, descripción, mapa del sitio, datos del negocio.</span><span class="en">What Google reads: title, description, sitemap, business data.</span></p></div></div>
-      <div class="card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.2 2.2M16.2 16.2l2.2 2.2M5.6 18.4l2.2-2.2M16.2 7.8l2.2-2.2"/><circle cx="12" cy="12" r="3"/></svg><div><h3><span class="es">Asistentes de IA</span><span class="en">AI assistants</span></h3><p><span class="es">Si los asistentes de IA pueden leer la web.</span><span class="en">Whether AI assistants can read the site.</span></p></div></div>
-      <div class="card"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><div><h3><span class="es">Correo del dominio</span><span class="en">Domain email</span></h3><p><span class="es">Si el correo del dominio está protegido contra suplantación.</span><span class="en">Whether the domain's email is protected against forgery.</span></p></div></div>
-    </div>
-  </section>
+<section class="sec">
+  <aside class="marg">
+    <span class="n">§ 1</span>
+    <span class="t"><span class="es">Qué comprobamos</span><span class="en">What we check</span></span>
+  </aside>
+  <div class="body">
+    <ol class="what">
+      <li><span><b><span class="es">Seguridad</span><span class="en">Security</span></b><span class="d"><span class="es">Si carga segura (https), si el certificado vale y cuándo caduca.</span><span class="en">Whether it loads securely (https), whether the certificate is valid and when it expires.</span></span></span></li>
+      <li><span><b><span class="es">Móvil y velocidad</span><span class="en">Mobile and speed</span></b><span class="d"><span class="es">Cómo se ve y cuánto tarda en un móvil real emulado, con captura.</span><span class="en">How it looks and how long it takes on an emulated real phone, with a screenshot.</span></span></span></li>
+      <li><span><b><span class="es">Contacto</span><span class="en">Contact</span></b><span class="d"><span class="es">Si se puede llamar o escribir por WhatsApp con un toque.</span><span class="en">Whether you can call or WhatsApp with one tap.</span></span></span></li>
+      <li><span><b>Google</b><span class="d"><span class="es">Lo que Google lee: título, descripción, mapa del sitio, datos del negocio.</span><span class="en">What Google reads: title, description, sitemap, business data.</span></span></span></li>
+      <li><span><b><span class="es">Asistentes de IA</span><span class="en">AI assistants</span></b><span class="d"><span class="es">Si los asistentes de IA pueden leer la web.</span><span class="en">Whether AI assistants can read the site.</span></span></span></li>
+      <li><span><b><span class="es">Correo del dominio</span><span class="en">Domain email</span></b><span class="d"><span class="es">Si el correo del dominio está protegido contra suplantación.</span><span class="en">Whether the domain's email is protected against forgery.</span></span></span></li>
+    </ol>
+  </div>
+</section>
 
-  {% if examples %}
-  <section class="homesec">
-    <h2><span class="es">Así es un diagnóstico</span><span class="en">What a diagnosis looks like</span></h2>
-    <p class="sub"><span class="es">Resultados reales de este mismo servicio, tal cual se midieron.</span><span class="en">Real results from this same service, exactly as measured.</span></p>
-    <div class="examples">
+{% if examples %}
+<section class="sec">
+  <aside class="marg">
+    <span class="n">§ 2</span>
+    <span class="t"><span class="es">Así es un diagnóstico</span><span class="en">What a diagnosis looks like</span></span>
+    <p><span class="es">Resultados reales de este mismo servicio, tal cual se midieron.</span><span class="en">Real results from this same service, exactly as measured.</span></p>
+  </aside>
+  <div class="body">
+    <ul class="examples">
       {% for e in examples %}
-      <a class="card ex" href="/r/{{ e.id }}">
-        {% if e.shot %}<span class="thumb"><img src="{{ e.shot }}" alt="" loading="lazy" width="76" height="140"></span>{% else %}<span class="thumb none"><span class="es">sin captura</span><span class="en">no screenshot</span></span>{% endif %}
+      <li><a class="ex" href="/r/{{ e.id }}">
+        {% if e.shot %}<span class="thumb"><img src="{{ e.shot }}" alt="" loading="lazy" width="64" height="118"></span>{% else %}<span class="thumb none"><span class="es">sin captura</span><span class="en">no screenshot</span></span>{% endif %}
         <span>
           <span class="host">{{ e.host }}</span>
           <span class="v"><span class="es">{{ e.verdict.es }}</span><span class="en">{{ e.verdict.en }}</span></span>
-          {% if e.scores and e.scores.seo is not none %}<span class="sc">{% for k, lab in [("seo", "SEO"), ("ai", "IA"), ("speed", "VEL")] %}{% set v = e.scores[k] %}<span class="{{ 'good' if v is not none and v >= 80 else 'mid' if v is not none and v >= 50 else 'bad' if v is not none else '' }}">{{ lab }} {{ v if v is not none else '—' }}</span>{% endfor %}</span>{% endif %}
-          <span class="date">{{ e.date }}</span>
-          <span class="go"><span class="es">Ver el diagnóstico →</span><span class="en">See the diagnosis →</span></span>
+          {% if e.scores and e.scores.seo is not none %}<span class="sc">{% for k, es, en in [("seo", "Google y SEO", "Google and SEO"), ("ai", "IA", "AI"), ("speed", "Velocidad", "Speed")] %}{% set v = e.scores[k] %}<span><span class="es">{{ es }}</span><span class="en">{{ en }}</span> <b>{{ v if v is not none else '—' }}</b></span>{% endfor %}</span>{% endif %}
+          <span class="date"><span class="es">Medido el {{ e.date }}.</span><span class="en">Measured on {{ e.date }}.</span></span>
         </span>
-      </a>
+      </a></li>
       {% endfor %}
-    </div>
-  </section>
-  {% endif %}
-</main>
-<footer class="wrap foot"><span class="es">EmbalaLab SiteCheck · Aron Lobo, Alhaurín de la Torre · <a href="mailto:aronlobo@embalalab.com">aronlobo@embalalab.com</a></span><span class="en">EmbalaLab SiteCheck · Aron Lobo, Alhaurín de la Torre · <a href="mailto:aronlobo@embalalab.com">aronlobo@embalalab.com</a></span></footer>
+    </ul>
+  </div>
+</section>
+{% endif %}
+
+<footer class="foot"><span><span class="es">Aron Lobo, Alhaurín de la Torre · <a href="mailto:aronlobo@embalalab.com">aronlobo@embalalab.com</a></span><span class="en">Aron Lobo, Alhaurín de la Torre · <a href="mailto:aronlobo@embalalab.com">aronlobo@embalalab.com</a></span></span><span class="rf">EmbalaLab SiteCheck</span></footer>
+</div>
 {% include "_foot.html" %}
 <script>
 (function(){
