@@ -66,7 +66,7 @@ async def _worker(job_id: str):
             audit = await run_audit(job["host"], outdir, prog)
             report = build_findings(audit)
             (outdir / "report.json").write_text(json.dumps(report, ensure_ascii=False), encoding="utf-8")
-            render_html(audit, report, outdir, inline_images=False)
+            render_html(audit, report, outdir, inline_images=False, file_base=f"/r/{job_id}/")
             job.update(status="done", step="done", finished=time.time())
         except Exception as e:  # noqa: BLE001
             job.update(status="error", step="error", error=f"{type(e).__name__}: {str(e)[:200]}", finished=time.time())
