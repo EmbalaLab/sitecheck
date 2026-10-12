@@ -22,8 +22,8 @@
     <p class="eyebrow"><span class="es">Diagnóstico en un minuto</span><span class="en">One-minute diagnosis</span></p>
     <h1>{{ a.host }}</h1>
     <p class="meta">
-      <span class="es">Comprobado el {{ a.checkedAt[:10] }} en {{ (a.elapsedMs / 1000) | round(0) | int }} s, desde fuera, sin acceso a la web.</span>
-      <span class="en">Checked on {{ a.checkedAt[:10] }} in {{ (a.elapsedMs / 1000) | round(0) | int }} s, from the outside, with no access to the site.</span>
+      <span class="es">Comprobado el {{ a.checkedAt[:10] }} en {{ (a.elapsedMs / 1000) | round(0) | int }} s, desde fuera, sin acceso a la web. <a href="/?url={{ a.host }}&force=1">Volver a comprobar</a></span>
+      <span class="en">Checked on {{ a.checkedAt[:10] }} in {{ (a.elapsedMs / 1000) | round(0) | int }} s, from the outside, with no access to the site. <a href="/?url={{ a.host }}&force=1">Check again</a></span>
     </p>
     <p class="verdict"><span class="es">{{ r.summary.verdict.es }}</span><span class="en">{{ r.summary.verdict.en }}</span></p>
     <div class="counts">

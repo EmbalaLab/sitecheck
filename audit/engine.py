@@ -304,9 +304,12 @@ async def render(url: str, outdir: pathlib.Path) -> dict:
             page = await ctx.new_page()
             errs: list[str] = []
             failed: list[str] = []
+            site_host = (urlparse(url).hostname or "").replace("www.", "")
+            # Third-party resources (trackers, ad pixels, fonts) failing from our network are not the site's fault:
+            # count only script errors and same-site resources that fail.
             page.on("pageerror", lambda e: errs.append(str(e)[:160]))
-            page.on("console", lambda m: errs.append(m.text[:160]) if m.type == "error" else None)
-            page.on("requestfailed", lambda r: failed.append(r.url[:160]))
+            page.on("console", lambda m: errs.append(m.text[:160]) if m.type == "error" and not m.text.startswith("Failed to load resource") else None)
+            page.on("requestfailed", lambda r: failed.append(r.url[:160]) if (urlparse(r.url).hostname or "").replace("www.", "").endswith(site_host) else None)
             rec: dict = {"ok": False, "error": ""}
             t0 = time.perf_counter()
             try:
@@ -334,8 +337,8 @@ async def render(url: str, outdir: pathlib.Path) -> dict:
                 rec["ok"] = True
             except Exception as e:  # noqa: BLE001
                 rec["error"] = f"{type(e).__name__}: {str(e).splitlines()[0][:140]}"
-            rec["consoleErrors"] = errs[:10]
-            rec["consoleErrorCount"] = len(errs)
+            rec["consoleErrors"] = (errs + [f"Failed to load (same site): {u}" for u in failed])[:10]
+            rec["consoleErrorCount"] = len(errs) + len(failed)
             rec["failedRequests"] = failed[:10]
             res[kind] = rec
             await ctx.close()
