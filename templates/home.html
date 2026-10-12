@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es" class="mode-core scheme-light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteCheck · Diagnóstico web en un minuto</title>
+<meta name="description" content="Escriba la dirección de su web y en un minuto tendrá una lista de lo que falla, ordenada por lo que le cuesta. Gratis, sin registro, hecho desde Alhaurín de la Torre.">
+<style>{{ css | safe }}
+.formwrap{max-width:640px;margin:0 auto;padding:56px 16px 40px}
+.formwrap h1{font-size:36px;margin-bottom:8px}
+.formwrap .lead{font-size:17px;color:var(--fg-2);margin:0 0 24px}
+form{display:flex;gap:8px;flex-wrap:wrap}
+input[type=text]{flex:1 1 280px;font:inherit;font-size:17px;padding:12px 14px;border:1.5px solid var(--line-2);border-radius:8px;background:var(--bg-2);color:var(--fg-1)}
+input[type=text]:focus{outline:none;box-shadow:var(--focus-ring)}
+button.go{font:inherit;font-size:16px;font-weight:600;padding:12px 20px;border:0;border-radius:8px;background:var(--fg-1);color:var(--bg-1);cursor:pointer}
+button.go[disabled]{opacity:.6;cursor:wait}
+.status{margin-top:18px;font-size:15px;color:var(--fg-2);min-height:24px}
+.steps{list-style:none;padding:0;margin:8px 0 0;display:flex;gap:6px;flex-wrap:wrap}
+.steps li{font-size:12px;padding:3px 8px;border-radius:999px;border:1px solid var(--line-2);color:var(--fg-3)}
+.steps li.on{border-color:var(--fg-1);color:var(--fg-1)}
+.err{color:var(--danger)}
+.what{margin-top:40px;font-size:15px;color:var(--fg-2)}
+.what h2{font:600 18px/1.3 var(--font-display);color:var(--fg-1);margin:0 0 8px}
+.what ul{padding-left:18px;margin:0}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap row"><a class="brand" href="/">E<span class="dot">.</span> <span>EmbalaLab · SiteCheck</span></a>
+<div class="lang" role="group" aria-label="Idioma"><button data-lang="es" class="on">ES</button><button data-lang="en">EN</button></div></div></header>
+<main class="formwrap">
+  <p class="eyebrow"><span class="es">Gratis · sin registro · un minuto</span><span class="en">Free · no sign-up · one minute</span></p>
+  <h1><span class="es">¿Qué le está costando clientes su web?</span><span class="en">What is your website costing you?</span></h1>
+  <p class="lead"><span class="es">Escriba la dirección. Miramos la portada como la ve un cliente en el móvil, Google y los asistentes de IA, y le decimos qué falla, por orden de lo que cuesta.</span><span class="en">Type the address. We look at the home page the way a customer on a phone, Google and AI assistants see it, and tell you what fails, in order of what it costs.</span></p>
+  <form id="f" autocomplete="off">
+    <input type="text" id="url" name="url" placeholder="minegocio.es" inputmode="url" required>
+    <button class="go" type="submit"><span class="es">Diagnosticar</span><span class="en">Diagnose</span></button>
+  </form>
+  <div class="status" id="status"></div>
+  <ul class="steps" id="steps" hidden>
+    <li data-s="dns">DNS</li><li data-s="variants">https</li><li data-s="cert"><span class="es">certificado</span><span class="en">certificate</span></li><li data-s="html">HTML</li><li data-s="robots">robots</li><li data-s="links"><span class="es">enlaces</span><span class="en">links</span></li><li data-s="render"><span class="es">móvil</span><span class="en">phone</span></li>
+  </ul>
+  <section class="what">
+    <h2><span class="es">Qué comprobamos</span><span class="en">What we check</span></h2>
+    <ul>
+      <li><span class="es">Si carga segura (https), si el certificado vale y cuándo caduca.</span><span class="en">Whether it loads securely (https), whether the certificate is valid and when it expires.</span></li>
+      <li><span class="es">Cómo se ve y cuánto tarda en un móvil real emulado, con captura.</span><span class="en">How it looks and how long it takes on an emulated real phone, with a screenshot.</span></li>
+      <li><span class="es">Si se puede llamar o escribir por WhatsApp con un toque.</span><span class="en">Whether you can call or WhatsApp with one tap.</span></li>
+      <li><span class="es">Lo que Google lee: título, descripción, mapa del sitio, datos del negocio.</span><span class="en">What Google reads: title, description, sitemap, business data.</span></li>
+      <li><span class="es">Si los asistentes de IA pueden leer la web.</span><span class="en">Whether AI assistants can read the site.</span></li>
+      <li><span class="es">Si el correo del dominio está protegido contra suplantación.</span><span class="en">Whether the domain's email is protected against forgery.</span></li>
+    </ul>
+    <p><span class="es">Solo la portada, una vez, desde fuera. No guardamos nada más que el resultado, y no pedimos su correo.</span><span class="en">Home page only, once, from the outside. We store nothing but the result, and we do not ask for your email.</span></p>
+  </section>
+</main>
+<footer class="wrap foot"><span class="es">EmbalaLab SiteCheck · Aron Lobo, Alhaurín de la Torre · <a href="mailto:aronlobo@embalalab.com">aronlobo@embalalab.com</a></span><span class="en">EmbalaLab SiteCheck · Aron Lobo, Alhaurín de la Torre · <a href="mailto:aronlobo@embalalab.com">aronlobo@embalalab.com</a></span></footer>
+<script>
+(function(){const b=document.body;const set=l=>{b.setAttribute('data-lang',l);document.documentElement.lang=l;document.querySelectorAll('.lang button').forEach(x=>x.classList.toggle('on',x.dataset.lang===l));try{localStorage.setItem('sc-lang',l)}catch(e){}};document.querySelectorAll('.lang button').forEach(x=>x.addEventListener('click',()=>set(x.dataset.lang)));let l='es';try{l=localStorage.getItem('sc-lang')||l}catch(e){}set(l);
+const f=document.getElementById('f'),st=document.getElementById('status'),steps=document.getElementById('steps'),btn=f.querySelector('button');
+const T={es:{q:'En cola…',r:'Comprobando…',e:'No se pudo completar: ',d:'Listo. Abriendo el resultado…',c:'Ya lo comprobamos hace poco. Abriendo…'},en:{q:'Queued…',r:'Checking…',e:'Could not complete: ',d:'Done. Opening the result…',c:'Checked recently. Opening…'}};
+const t=()=>T[b.getAttribute('data-lang')||'es'];
+f.addEventListener('submit',async ev=>{ev.preventDefault();btn.disabled=true;st.className='status';st.textContent=t().q;steps.hidden=false;steps.querySelectorAll('li').forEach(x=>x.classList.remove('on'));
+try{const r=await fetch('/api/audit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:document.getElementById('url').value})});const j=await r.json();if(!r.ok){throw new Error(j.detail||r.status)}
+if(j.status==='done'){st.textContent=t().c;location.href='/r/'+j.id;return}
+const id=j.id;const poll=async()=>{const s=await (await fetch('/api/audit/'+id)).json();if(s.status==='done'){st.textContent=t().d;location.href='/r/'+id;return}if(s.status==='error'){throw new Error(s.error||'error')}st.textContent=t().r;const li=steps.querySelector('[data-s="'+s.step+'"]');if(li){let on=true;steps.querySelectorAll('li').forEach(x=>{x.classList.toggle('on',on);if(x===li)on=false})}setTimeout(poll,1200)};poll();
+}catch(e){st.className='status err';st.textContent=t().e+e.message;btn.disabled=false}});})();
+</script>
+</body>
+</html>

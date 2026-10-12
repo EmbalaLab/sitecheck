@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es" class="mode-core scheme-light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnóstico de {{ a.host }} · EmbalaLab</title>
+<meta name="robots" content="noindex">
+<style>{{ css | safe }}</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap row">
+    <a class="brand" href="/">E<span class="dot">.</span> <span>EmbalaLab · SiteCheck</span></a>
+    <div class="lang" role="group" aria-label="Idioma">
+      <button data-lang="es" class="on">ES</button><button data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow"><span class="es">Diagnóstico en un minuto</span><span class="en">One-minute diagnosis</span></p>
+    <h1>{{ a.host }}</h1>
+    <p class="meta">
+      <span class="es">Comprobado el {{ a.checkedAt[:10] }} en {{ (a.elapsedMs / 1000) | round(0) | int }} s, desde fuera, sin acceso a la web.</span>
+      <span class="en">Checked on {{ a.checkedAt[:10] }} in {{ (a.elapsedMs / 1000) | round(0) | int }} s, from the outside, with no access to the site.</span>
+    </p>
+    <p class="verdict"><span class="es">{{ r.summary.verdict.es }}</span><span class="en">{{ r.summary.verdict.en }}</span></p>
+    <div class="counts">
+      <span class="chip high">{{ r.summary.counts.high }} <span class="es">graves</span><span class="en">serious</span></span>
+      <span class="chip medium">{{ r.summary.counts.medium }} <span class="es">importantes</span><span class="en">important</span></span>
+      <span class="chip low">{{ r.summary.counts.low }} <span class="es">detalles</span><span class="en">details</span></span>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="col">
+      {% if shots['phone-fold'] %}
+      <figure class="phone">
+        <img src="{{ shots['phone-fold'] }}" alt="Home page on an emulated phone">
+        <figcaption><span class="es">Portada en un móvil emulado (Pixel 7).</span><span class="en">Home page on an emulated phone (Pixel 7).</span></figcaption>
+      </figure>
+      {% endif %}
+      <div class="card tech">
+        <h2><span class="es">Quién hace qué</span><span class="en">Who runs what</span></h2>
+        <dl>
+          {% set t = r.summary.tech %}
+          <dt><span class="es">Plataforma</span><span class="en">Platform</span></dt><dd>{{ t.cms or '—' }}{% if t.builder %} · {{ t.builder }}{% endif %}</dd>
+          <dt><span class="es">Servidor</span><span class="en">Server</span></dt><dd>{{ t.server or '—' }}{% if t.cdn %} · {{ t.cdn }}{% endif %}</dd>
+          <dt><span class="es">Alojamiento</span><span class="en">Hosting</span></dt><dd>{{ t.hostingHint or t.ip or '—' }}</dd>
+          <dt><span class="es">Correo</span><span class="en">Mail</span></dt><dd>{{ t.mail or '—' }}</dd>
+          <dt><span class="es">Carga móvil</span><span class="en">Phone load</span></dt><dd>{% if a.render and a.render.phone and a.render.phone.loadMs %}{{ (a.render.phone.loadMs / 1000) | round(1) }} s{% else %}—{% endif %}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="col main">
+      {% if r.findings %}
+      <h2 class="h"><span class="es">Qué encontramos, por orden de lo que cuesta</span><span class="en">What we found, in order of what it costs</span></h2>
+      {% for f in r.findings %}
+      <article class="card finding {{ f.severity }}">
+        <div class="fhead">
+          <span class="sev {{ f.severity }}">
+            {% if f.severity == 'high' %}<span class="es">Grave</span><span class="en">Serious</span>{% elif f.severity == 'medium' %}<span class="es">Importante</span><span class="en">Important</span>{% else %}<span class="es">Detalle</span><span class="en">Detail</span>{% endif %}
+          </span>
+          <h3><span class="es">{{ f.es.title }}</span><span class="en">{{ f.en.title }}</span></h3>
+        </div>
+        <p class="saw"><strong><span class="es">Lo que vimos.</span><span class="en">What we saw.</span></strong> <span class="es">{{ f.es.saw }}</span><span class="en">{{ f.en.saw }}</span></p>
+        <p class="why"><strong><span class="es">Por qué importa.</span><span class="en">Why it matters.</span></strong> <span class="es">{{ f.es.why }}</span><span class="en">{{ f.en.why }}</span></p>
+        <p class="see"><strong><span class="es">Compruébelo.</span><span class="en">See for yourself.</span></strong> <span class="es">{{ f.es.see }}</span><span class="en">{{ f.en.see }}</span>
+          {% for e in f.evidence %} <a href="{{ e }}" target="_blank" rel="noopener">↗</a>{% endfor %}</p>
+      </article>
+      {% endfor %}
+      {% endif %}
+
+      {% if r.good %}
+      <div class="card good">
+        <h2><span class="es">Lo que ya está bien</span><span class="en">What is already fine</span></h2>
+        <ul>{% for g in r.good %}<li><span class="es">{{ g.es }}</span><span class="en">{{ g.en }}</span></li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+
+      <div class="card honest">
+        <h2><span class="es">Lo que esta prueba no ve</span><span class="en">What this test does not see</span></h2>
+        <p><span class="es">Solo la portada, una vez, desde un móvil emulado. No prueba el formulario, no lee el resto de páginas, no sabe cuántas visitas tiene la web ni qué posición ocupa en Google. Un fallo aquí es real; que no aparezca un fallo no significa que no exista.</span><span class="en">Only the home page, once, from an emulated phone. It does not try the form, does not read the other pages, does not know how many visits the site gets or where it ranks on Google. A fault here is real; the absence of a fault is not proof there is none.</span></p>
+      </div>
+
+      <div class="cta card">
+        <p><span class="es">Hecho por <strong>Aron Lobo</strong>, desarrollador en Alhaurín de la Torre. Si quiere que arregle algo de esta lista, escríbame con el nombre del hallazgo y le digo hoy mismo cuánto tiempo lleva.</span><span class="en">Made by <strong>Aron Lobo</strong>, developer in Alhaurín de la Torre. If you want something on this list fixed, write to me with the name of the finding and I will tell you today how long it takes.</span></p>
+        <p class="contact"><a href="mailto:aronlobo@embalalab.com">aronlobo@embalalab.com</a> · <a href="https://wa.me/34682453682">WhatsApp</a> · <a href="https://www.linkedin.com/in/aron-lobo">LinkedIn</a></p>
+      </div>
+
+      <details class="raw"><summary><span class="es">Datos medidos (técnico)</span><span class="en">Measured data (technical)</span></summary><pre>{{ raw }}</pre></details>
+    </div>
+  </section>
+</main>
+<footer class="wrap foot"><span class="es">EmbalaLab SiteCheck · Alhaurín de la Torre · Los datos de esta página se midieron una vez y no se guardan en ningún otro sitio.</span><span class="en">EmbalaLab SiteCheck · Alhaurín de la Torre · The data on this page was measured once and is stored nowhere else.</span></footer>
+<script>
+(function(){const b=document.body;const set=l=>{b.setAttribute('data-lang',l);document.documentElement.lang=l;document.querySelectorAll('.lang button').forEach(x=>x.classList.toggle('on',x.dataset.lang===l));try{localStorage.setItem('sc-lang',l)}catch(e){}};document.querySelectorAll('.lang button').forEach(x=>x.addEventListener('click',()=>set(x.dataset.lang)));let l='es';try{l=localStorage.getItem('sc-lang')||l}catch(e){}set(l);})();
+</script>
+</body>
+</html>

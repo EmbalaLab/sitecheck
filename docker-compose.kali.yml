@@ -1,0 +1,21 @@
+# Kali deployment. Public hostname audit.embalalab.com via the homelab Cloudflare tunnel
+# (ingress -> http://sitecheck:3000). Host port 3124 (registered in shared/port-registry.md).
+services:
+  sitecheck:
+    build: .
+    container_name: sitecheck
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3124:3000"
+    volumes:
+      - /srv/data/sitecheck:/data
+    environment:
+      DATA_DIR: /data
+      CACHE_SECONDS: "21600"
+      PER_IP_PER_HOUR: "5"
+    shm_size: "1g"
+    networks:
+      - docker_homelab
+networks:
+  docker_homelab:
+    external: true
