@@ -24,7 +24,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 UA = "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
-HEADERS = {"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language": "es-ES,es;q=0.9,en;q=0.7", "X-SiteCheck": "EmbalaLab SiteCheck, https://audit.embalalab.com"}
+HEADERS = {"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language": "es-ES,es;q=0.9,en;q=0.7", "X-SiteCheck": "EmbalaLab SiteCheck, https://webaudit.embalalab.com"}
 AI_BOTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "PerplexityBot", "Google-Extended", "Applebot-Extended", "Meta-ExternalAgent", "Amazonbot", "Bytespider", "CCBot", "Bingbot", "Googlebot"]
 TIMEOUT = httpx.Timeout(15.0, connect=10.0)
 PHONE_RE = re.compile(r"(?<!\d)(?:\+34[\s.-]?)?(?:[6789]\d{2})[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}(?!\d)")

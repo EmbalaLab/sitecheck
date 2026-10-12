@@ -1,4 +1,4 @@
-# Kali deployment. Public hostname audit.embalalab.com via the homelab Cloudflare tunnel
+# Kali deployment. Public hostname webaudit.embalalab.com (audit.embalalab.com redirects) via the homelab Cloudflare tunnel
 # (ingress -> http://sitecheck:3000). Host port 3124 (registered in shared/port-registry.md).
 services:
   sitecheck:
@@ -13,6 +13,8 @@ services:
       DATA_DIR: /data
       CACHE_SECONDS: "21600"
       PER_IP_PER_HOUR: "5"
+      CANONICAL_HOST: "webaudit.embalalab.com"
+      LEGACY_HOSTS: "audit.embalalab.com"
       # Real runs shown as example cards on the home page (ids under /srv/data/sitecheck). A missing run is simply not shown.
       EXAMPLE_IDS: "smlmkeq-OLA,fnlqk9gEh0g,3z884Yxx6ws,bXFXWZWLaGo"
     shm_size: "1g"

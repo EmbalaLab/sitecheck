@@ -1,6 +1,6 @@
 # SiteCheck — one-minute website diagnosis
 
-Paste a URL, get a card: what is wrong with the home page, ordered by what it costs the business, in Spanish and English, with a phone screenshot, a radar chart against the standard and the local average, and the measured facts behind every finding. Public at audit.embalalab.com.
+Paste a URL, get a card: what is wrong with the home page, ordered by what it costs the business, in Spanish and English, with a phone screenshot, a radar chart against the standard and the local average, and the measured facts behind every finding. Public at webaudit.embalalab.com (a free tool by EmbalaLab; the old hostname audit.embalalab.com redirects there).
 
 What it measures (home page only, one run, from the outside), shown as findings ordered by business cost plus three scorecards:
 

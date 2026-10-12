@@ -20,7 +20,7 @@ import secrets
 import time
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -70,6 +70,18 @@ async def _worker(job_id: str):
             job.update(status="done", step="done", finished=time.time())
         except Exception as e:  # noqa: BLE001
             job.update(status="error", step="error", error=f"{type(e).__name__}: {str(e)[:200]}", finished=time.time())
+
+
+CANONICAL_HOST = os.environ.get("CANONICAL_HOST", "")  # e.g. webaudit.embalalab.com; other public hostnames redirect there
+LEGACY_HOSTS = {h.strip() for h in os.environ.get("LEGACY_HOSTS", "").split(",") if h.strip()}
+
+
+@app.middleware("http")
+async def _canonical_host(request: Request, call_next):
+    host = (request.headers.get("host") or "").split(":")[0].lower()
+    if CANONICAL_HOST and host in LEGACY_HOSTS:
+        return RedirectResponse(f"https://{CANONICAL_HOST}{request.url.path}" + (f"?{request.url.query}" if request.url.query else ""), status_code=301)
+    return await call_next(request)
 
 
 @app.exception_handler(StarletteHTTPException)
