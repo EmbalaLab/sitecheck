@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import datetime as dt
 
+from .panels import build_panels
+
 SEV_ORDER = {"high": 0, "medium": 1, "low": 2}
 
 
@@ -31,13 +33,13 @@ def build_findings(a: dict) -> dict:
         F.append(_f("blocked", "medium",
                     {"title": "La web rechaza las visitas automáticas", "saw": f"El servidor respondió {codes} a nuestra petición y también al navegador emulado. Suele ser un cortafuegos (Cloudflare, Hostinger, Wordfence) que bloquea direcciones de centros de datos.", "why": "Para una persona en el móvil la web probablemente funciona. Pero si ese bloqueo también alcanza a Google o a los asistentes de IA, la web desaparece de los resultados. Conviene comprobar en Search Console que Google sí la lee.", "see": "Abra la web desde el móvil con datos; si carga, el bloqueo solo afecta a robots."},
                     {"title": "The site refuses automated visits", "saw": f"The server answered {codes} to our request and to the emulated browser. Usually a firewall (Cloudflare, Hostinger, Wordfence) blocking data-centre addresses.", "why": "For a person on a phone the site probably works. But if that block also catches Google or AI assistants, the site vanishes from results. Check in Search Console that Google can read it.", "see": "Open the site on a phone over mobile data; if it loads, the block only affects robots."}))
-        return {"findings": F, "good": G, "summary": _summary(F, a)}
+        return {"findings": F, "good": G, "summary": _summary(F, a), "panels": build_panels(a)}
     if not a.get("reachable"):
         errs = "; ".join(f"{v['requested']}: {v['error'] or v['status']}" for v in a.get("variants", []))[:300]
         F.append(_f("down", "high",
                     {"title": "La web no responde", "saw": f"Ninguna de las cuatro direcciones cargó. {errs}", "why": "Quien busque el negocio hoy no encuentra nada. Cada visita que llega desde Google o desde una tarjeta se pierde.", "see": "Abra la web en el móvil con los datos, no con el wifi de la oficina."},
                     {"title": "The site does not respond", "saw": f"None of the four addresses loaded. {errs}", "why": "Anyone looking for the business today finds nothing. Every visit from Google or a business card is lost.", "see": "Open the site on a phone using mobile data, not the office wifi."}))
-        return {"findings": F, "good": G, "summary": _summary(F, a)}
+        return {"findings": F, "good": G, "summary": _summary(F, a), "panels": build_panels(a)}
 
     page, seo, links, rend, hdr = a.get("page", {}), a.get("seo", {}), a.get("links", {}), a.get("render", {}), a.get("headers", {})
     ph, dsk = rend.get("phone", {}), rend.get("desktop", {})
@@ -237,8 +239,77 @@ def build_findings(a: dict) -> dict:
     if page.get("cms") == "WordPress" and page.get("version"):
         G.append({"es": f"WordPress {page['version']} (versión visible en el código; conviene ocultarla).", "en": f"WordPress {page['version']} (version visible in the code; better hidden)."})
 
+    # --- SEO basics the owner can act on -------------------------------------------
+    tl = page.get("titleLen", 0)
+    if tl and (tl < 30 or tl > 65):
+        F.append(_f("title-length", "low",
+                    {"title": f"El título de la portada tiene {tl} caracteres", "saw": f"Título: '{t}'. Google muestra entre 50 y 60; menos de 30 desaprovecha el espacio, más de 65 se corta.", "why": "El título es lo que se lee en azul en Google. Es el sitio donde decir qué hace el negocio y dónde.", "see": "Busque el negocio en Google y mire si la línea azul se corta."},
+                    {"title": f"The home page title is {tl} characters", "saw": f"Title: '{t}'. Google shows 50 to 60; under 30 wastes the space, over 65 gets cut.", "why": "The title is the blue line in Google. It is where to say what the business does and where.", "see": "Search the business on Google and see whether the blue line is cut."}))
+    dl = len(page.get("metaDesc", ""))
+    if dl and (dl < 70 or dl > 165):
+        F.append(_f("desc-length", "low",
+                    {"title": f"La meta descripción tiene {dl} caracteres", "saw": "Google muestra unos 150 a 160; menos de 70 queda corta, más de 165 se corta.", "why": "Son las dos líneas grises bajo el enlace. Deciden si alguien pulsa.", "see": "Busque el negocio en Google y lea las líneas grises."},
+                    {"title": f"The meta description is {dl} characters", "saw": "Google shows about 150 to 160; under 70 is short, over 165 gets cut.", "why": "They are the two grey lines under the link. They decide whether someone clicks.", "see": "Search the business on Google and read the grey lines."}))
+    if len(page.get("h1", [])) > 1:
+        F.append(_f("many-h1", "low",
+                    {"title": f"La portada tiene {len(page['h1'])} encabezados principales", "saw": "Hay más de una etiqueta <h1>: " + " | ".join(h[:40] for h in page["h1"][:3]), "why": "Google y los asistentes de IA usan el H1 como el titular de la página. Varios titulares diluyen el mensaje.", "see": "Es técnico."},
+                    {"title": f"The home page has {len(page['h1'])} main headings", "saw": "There is more than one <h1> tag: " + " | ".join(h[:40] for h in page["h1"][:3]), "why": "Google and AI assistants use the H1 as the page's headline. Several headlines dilute the message.", "see": "Technical."}))
+    if page.get("canonicalHref") and not page.get("canonicalOk"):
+        F.append(_f("canonical-mismatch", "medium",
+                    {"title": "La etiqueta canonical apunta a otra dirección", "saw": f"La portada declara como canónica {page['canonicalHref']}, que no es la dirección por la que se cargó.", "why": "Le está diciendo a Google que la página 'oficial' es otra. Puede hacer que Google muestre la dirección equivocada o ninguna.", "see": "Es técnico; se ve en el código fuente buscando 'canonical'."},
+                    {"title": "The canonical tag points to a different address", "saw": f"The home page declares {page['canonicalHref']} as canonical, which is not the address it loaded from.", "why": "It tells Google the 'official' page is another one. Google may show the wrong address, or none.", "see": "Technical; visible in the page source searching for 'canonical'."}))
+    wc = page.get("wordCount", 0)
+    if wc < 80:
+        F.append(_f("thin-content", "medium",
+                    {"title": "La portada casi no tiene texto", "saw": f"{wc} palabras en la portada.", "why": "Google y los asistentes de IA no pueden recomendar lo que no pueden leer. Una portada solo de imágenes no posiciona para nada.", "see": "Seleccione todo el texto de la portada: ¿cabe en un párrafo?"},
+                    {"title": "The home page has almost no text", "saw": f"{wc} words on the home page.", "why": "Google and AI assistants cannot recommend what they cannot read. An image-only home page ranks for nothing.", "see": "Select all the text on the home page: does it fit in one paragraph?"}))
+    og = page.get("ogFields", {})
+    if not any(og.values()):
+        F.append(_f("no-og", "low",
+                    {"title": "Sin vista previa al compartir en WhatsApp o redes", "saw": "No hay etiquetas Open Graph (og:title, og:description, og:image).", "why": "Cuando alguien comparte el enlace por WhatsApp, no sale ni imagen ni título. Se comparte menos y se pulsa menos.", "see": "Pegue la dirección de la web en un chat de WhatsApp y mire la vista previa."},
+                    {"title": "No preview when shared on WhatsApp or social media", "saw": "No Open Graph tags (og:title, og:description, og:image).", "why": "When someone shares the link on WhatsApp, no image or title appears. It gets shared less and clicked less.", "see": "Paste the site address into a WhatsApp chat and look at the preview."}))
+    if not page.get("favicon"):
+        F.append(_f("no-favicon", "low",
+                    {"title": "Sin icono de pestaña (favicon)", "saw": "No hay etiqueta de icono en el código.", "why": "En Google móvil el icono aparece junto al nombre del sitio. Sin él, sale un globo gris.", "see": "Mire la pestaña del navegador."},
+                    {"title": "No tab icon (favicon)", "saw": "No icon tag in the code.", "why": "On mobile Google the icon appears next to the site name. Without it, a grey globe shows.", "see": "Look at the browser tab."}))
+
+    # --- AI readiness -------------------------------------------------------------
+    biz = page.get("biz", {})
+    if biz.get("type"):
+        missing = [k for k in ("address", "telephone", "openingHours", "sameAs") if not biz.get(k)]
+        if missing:
+            names = {"address": "dirección / address", "telephone": "teléfono / phone", "openingHours": "horario / hours", "sameAs": "perfiles sociales / social profiles"}
+            F.append(_f("schema-incomplete", "low",
+                        {"title": "La ficha del negocio en el código está incompleta", "saw": f"Hay una ficha {biz['type']} pero le faltan: {', '.join(names[m].split(' / ')[0] for m in missing)}.", "why": "Es lo que ChatGPT, Perplexity y Google leen para saber dónde está el negocio, cómo llamar y cuándo abre. Cada campo que falta es una pregunta que no pueden responder.", "see": "Es técnico; se comprueba con la herramienta de resultados enriquecidos de Google."},
+                        {"title": "The business card in the code is incomplete", "saw": f"There is a {biz['type']} card but it lacks: {', '.join(names[m].split(' / ')[1] for m in missing)}.", "why": "It is what ChatGPT, Perplexity and Google read to know where the business is, how to call and when it opens. Each missing field is a question they cannot answer.", "see": "Technical; checked with Google's rich results test."},
+                        [f"https://search.google.com/test/rich-results?url={primary}"]))
+    if not page.get("faqSchema") and not page.get("faqHint") and not page.get("questionHeadings"):
+        F.append(_f("no-faq", "low",
+                    {"title": "La portada no responde preguntas", "saw": "No hay bloque de preguntas frecuentes ni encabezados en forma de pregunta.", "why": "Los asistentes de IA citan con preferencia páginas que responden preguntas concretas ('¿cuánto tarda…?', '¿atendéis en…?'). Cinco preguntas con respuestas cortas es la mejora más barata para aparecer en ChatGPT y Perplexity.", "see": "Pregunte a ChatGPT por un negocio como el suyo en su zona y vea a quién cita."},
+                    {"title": "The home page answers no questions", "saw": "No FAQ block and no question-shaped headings.", "why": "AI assistants prefer to cite pages that answer concrete questions ('how long does…?', 'do you serve…?'). Five questions with short answers is the cheapest way to show up in ChatGPT and Perplexity.", "see": "Ask ChatGPT for a business like yours in your area and see who it cites."}))
+    if not seo.get("llmsTxt"):
+        F.append(_f("no-llms", "low",
+                    {"title": "Sin llms.txt", "saw": "No existe /llms.txt en el dominio.", "why": "Es un archivo de texto nuevo (2024) donde la web explica a los modelos de IA qué es y qué páginas importan. Pocos lo tienen todavía; cuesta media hora y no hace daño.", "see": f"Abra {primary.rstrip('/')}/llms.txt"},
+                    {"title": "No llms.txt", "saw": "There is no /llms.txt on the domain.", "why": "A new (2024) plain-text file where a site tells AI models what it is and which pages matter. Few have it yet; it takes half an hour and does no harm.", "see": f"Open {primary.rstrip('/')}/llms.txt"}))
+    lm = page.get("landmarks", {})
+    if sum(lm.values()) < 2 and wc >= 80:
+        F.append(_f("no-landmarks", "low",
+                    {"title": "El código no marca qué es cabecera, menú, contenido y pie", "saw": f"Etiquetas semánticas encontradas: {', '.join(k for k, v in lm.items() if v) or 'ninguna'}.", "why": "Los lectores de IA y los lectores de pantalla usan esas marcas para saber qué parte de la página es el contenido. Sin ellas, mezclan el menú con el texto.", "see": "Es técnico."},
+                    {"title": "The code does not mark header, menu, content and footer", "saw": f"Semantic tags found: {', '.join(k for k, v in lm.items() if v) or 'none'}.", "why": "AI readers and screen readers use those marks to know which part of the page is the content. Without them they mix the menu with the text.", "see": "Technical."}))
+    if ph.get("ok"):
+        cls = ph.get("cls") or 0
+        if cls > 0.25:
+            F.append(_f("cls", "medium",
+                        {"title": "La página salta mientras carga en el móvil", "saw": f"Desplazamiento acumulado (CLS) de {cls:.2f}; Google considera bueno hasta 0,10.", "why": "El visitante va a pulsar un botón y el botón se mueve. Google lo mide y lo penaliza.", "see": "Abra la web en el móvil y mire si el contenido se mueve al cargar."},
+                        {"title": "The page jumps while loading on a phone", "saw": f"Cumulative layout shift (CLS) of {cls:.2f}; Google rates up to 0.10 as good.", "why": "The visitor goes to tap a button and the button moves. Google measures it and demotes for it.", "see": "Open the site on a phone and watch whether content moves while loading."}))
+        kb = ph.get("kb") or 0
+        if kb > 3500:
+            F.append(_f("heavy", "medium",
+                        {"title": f"La portada pesa {kb/1024:.1f} MB", "saw": f"{ph.get('requests', 0)} peticiones, {(ph.get('imageKb') or 0)/1024:.1f} MB en imágenes.", "why": "Con datos móviles, cada megabyte son segundos. Las imágenes sin comprimir son casi siempre la causa.", "see": "Abra la web con datos móviles y mire cuánto tarda la primera imagen grande."},
+                        {"title": f"The home page weighs {kb/1024:.1f} MB", "saw": f"{ph.get('requests', 0)} requests, {(ph.get('imageKb') or 0)/1024:.1f} MB of images.", "why": "On mobile data every megabyte is seconds. Uncompressed images are almost always the cause.", "see": "Open the site on mobile data and watch how long the first big image takes."}))
+
     F.sort(key=lambda f: SEV_ORDER[f["severity"]])
-    return {"findings": F, "good": G, "summary": _summary(F, a)}
+    return {"findings": F, "good": G, "summary": _summary(F, a), "panels": build_panels(a)}
 
 
 def _summary(F: list[dict], a: dict) -> dict:

@@ -25,7 +25,7 @@ from bs4 import BeautifulSoup
 
 UA = "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
 HEADERS = {"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language": "es-ES,es;q=0.9,en;q=0.7", "X-SiteCheck": "EmbalaLab SiteCheck, https://audit.embalalab.com"}
-AI_BOTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "PerplexityBot", "Google-Extended", "CCBot", "Bingbot", "Googlebot"]
+AI_BOTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "PerplexityBot", "Google-Extended", "Applebot-Extended", "Meta-ExternalAgent", "Amazonbot", "Bytespider", "CCBot", "Bingbot", "Googlebot"]
 TIMEOUT = httpx.Timeout(15.0, connect=10.0)
 PHONE_RE = re.compile(r"(?<!\d)(?:\+34[\s.-]?)?(?:[6789]\d{2})[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}(?!\d)")
 SOCIALS = ("facebook.com", "instagram.com", "linkedin.com", "tiktok.com", "youtube.com", "x.com", "twitter.com")
@@ -195,7 +195,54 @@ def analyze_html(html: str, page_url: str) -> dict:
     cookie_banner = bool(re.search(r"cookie|consent|cmp|rgpd|gdpr", " ".join((el.get("id", "") + " " + " ".join(el.get("class", []))) for el in soup.find_all(True, limit=4000)), re.I))
     phones_text = sorted({re.sub(r"[\s.-]", "", m) for m in PHONE_RE.findall(text)})
     yr = re.findall(r"(?:©|&copy;|copyright)\s*(?:\d{4}\s*[-–]\s*)?(20\d{2})", html, re.I)
+    # SEO basics
+    canon = soup.find("link", rel=lambda v: v and "canonical" in v)
+    canon_href = (canon.get("href", "") if canon else "").strip()
+    page_norm = page_url.rstrip("/").lower().replace("http://", "https://")
+    canon_ok = (not canon_href) or canon_href.rstrip("/").lower().replace("http://", "https://") == page_norm
+    og = {k: bool(soup.find("meta", property=f"og:{k}")) for k in ("title", "description", "image")}
+    favicon = bool(soup.find("link", rel=lambda v: v and any("icon" in x for x in v)))
+    words = len(re.findall(r"\w+", text))
+    headings = [h.get_text(" ", strip=True) for h in soup.find_all(["h1", "h2", "h3"])]
+    main_el = soup.find("main") or soup.find("article") or soup.body
+    paras = [pp.get_text(" ", strip=True) for pp in (main_el.find_all("p") if main_el else [])]
+    first_para = next((x for x in paras if len(x) > 60), "")[:260]
+    landmarks = {k: bool(soup.find(k)) for k in ("header", "nav", "main", "footer")}
+    biz_types = ("LocalBusiness", "Organization", "Store", "Restaurant", "Dentist", "MedicalBusiness", "AutoRepair", "Hotel", "ProfessionalService", "LegalService", "HomeAndConstructionBusiness", "MedicalClinic", "Physician", "RealEstateAgent", "TravelAgency", "FoodEstablishment")
+    biz = {"type": "", "name": False, "address": False, "telephone": False, "openingHours": False, "sameAs": False, "url": False, "geo": False, "image": False}
+    faq, website_search, breadcrumb = False, False, False
+    for sc in soup.find_all("script", type=re.compile("ld\\+json", re.I)):
+        try:
+            data = json.loads(sc.string or "")
+        except Exception:  # noqa: BLE001
+            continue
+        stack = [data]
+        while stack:
+            x = stack.pop()
+            if isinstance(x, dict):
+                t = x.get("@type")
+                tl = t if isinstance(t, list) else [t] if t else []
+                if any(tt in biz_types or (isinstance(tt, str) and ("Business" in tt or tt.endswith("Service"))) for tt in tl) and not biz["type"]:
+                    biz["type"] = str(tl[0])
+                    for k in ("name", "address", "telephone", "sameAs", "url", "geo", "image"):
+                        biz[k] = bool(x.get(k))
+                    biz["openingHours"] = bool(x.get("openingHours") or x.get("openingHoursSpecification"))
+                if "FAQPage" in tl:
+                    faq = True
+                if "WebSite" in tl and x.get("potentialAction"):
+                    website_search = True
+                if "BreadcrumbList" in tl:
+                    breadcrumb = True
+                stack.extend(x.values())
+            elif isinstance(x, list):
+                stack.extend(x)
     return {
+        "canonicalHref": canon_href, "canonicalOk": canon_ok, "hreflang": len(soup.find_all("link", rel=lambda v: v and "alternate" in v, hreflang=True)),
+        "ogFields": og, "twitterCard": bool(soup.find("meta", attrs={"name": re.compile("^twitter:card$", re.I)})), "favicon": favicon,
+        "wordCount": words, "h2": sum(1 for h in soup.find_all("h2")), "headings": headings[:12], "questionHeadings": sum(1 for h in headings if h.strip().endswith("?") or h.strip().startswith("¿")),
+        "faqHint": bool(re.search(r"preguntas frecuentes|\bfaq\b", text, re.I)), "firstParagraph": first_para, "landmarks": landmarks,
+        "biz": biz, "faqSchema": faq, "websiteSearch": website_search, "breadcrumb": breadcrumb, "mapEmbed": bool(re.search(r"google\.com/maps/embed|maps\.google\.com", html, re.I)),
+        "addressHint": bool(re.search(r"\b(calle|c/|avda|avenida|plaza|pol[ií]gono|camino|carretera|ctra)\b", text, re.I)),
         "title": title, "titleLen": len(title),
         "metaDesc": (md.get("content", "") if md else "").strip(), "h1": [h.get_text(" ", strip=True)[:120] for h in soup.find_all("h1")],
         "viewport": bool(soup.find("meta", attrs={"name": "viewport"})), "canonical": bool(soup.find("link", rel=lambda v: v and "canonical" in v)),
@@ -251,14 +298,17 @@ async def robots_sitemap_llms(base: str) -> dict:
                     res["sitemapXml"] = True
                     res["sitemapPath"] = path
                     res["sitemapUrls"] = len(re.findall(r"<loc>", r.text))
+                    lm = re.findall(r"<lastmod>\s*(\d{4}-\d{2}-\d{2})", r.text)
+                    res["sitemapLastmod"] = max(lm) if lm else ""
                     break
             except Exception:  # noqa: BLE001
                 continue
-        try:
-            r = await c.get(urljoin(base, "/llms.txt"))
-            res["llmsTxt"] = r.status_code == 200 and "<html" not in r.text[:300].lower()
-        except Exception:  # noqa: BLE001
-            pass
+        for key, path in (("llmsTxt", "/llms.txt"), ("llmsFullTxt", "/llms-full.txt")):
+            try:
+                r = await c.get(urljoin(base, path))
+                res[key] = r.status_code == 200 and "<html" not in r.text[:300].lower()
+            except Exception:  # noqa: BLE001
+                res[key] = False
     return res
 
 
@@ -285,8 +335,9 @@ async def check_links(links: list[str], limit: int = 15) -> dict:
 # ------------------------------------------------------------- playwright ---
 
 LCP_SCRIPT = """
-window.__lcp = 0;
+window.__lcp = 0; window.__cls = 0;
 try { new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__lcp = e.startTime; }).observe({type: 'largest-contentful-paint', buffered: true}); } catch (e) {}
+try { new PerformanceObserver((l) => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; }).observe({type: 'layout-shift', buffered: true}); } catch (e) {}
 """
 
 
@@ -310,6 +361,26 @@ async def render(url: str, outdir: pathlib.Path) -> dict:
             page.on("pageerror", lambda e: errs.append(str(e)[:160]))
             page.on("console", lambda m: errs.append(m.text[:160]) if m.type == "error" and not m.text.startswith("Failed to load resource") else None)
             page.on("requestfailed", lambda r: failed.append(r.url[:160]) if (urlparse(r.url).hostname or "").replace("www.", "").endswith(site_host) else None)
+            weight = {"requests": 0, "bytes": 0, "imageBytes": 0, "thirdParty": 0}
+
+            async def _on_response(resp):
+                try:
+                    weight["requests"] += 1
+                    cl = resp.headers.get("content-length")
+                    n = int(cl) if cl and cl.isdigit() else 0
+                    if not n and resp.status < 300 and resp.request.resource_type in ("document", "script", "stylesheet", "image", "font"):
+                        try:
+                            n = len(await resp.body())
+                        except Exception:  # noqa: BLE001
+                            n = 0
+                    weight["bytes"] += n
+                    if resp.request.resource_type == "image":
+                        weight["imageBytes"] += n
+                    if not (urlparse(resp.url).hostname or "").replace("www.", "").endswith(site_host):
+                        weight["thirdParty"] += 1
+                except Exception:  # noqa: BLE001
+                    pass
+            page.on("response", _on_response)
             rec: dict = {"ok": False, "error": ""}
             t0 = time.perf_counter()
             try:
@@ -321,6 +392,11 @@ async def render(url: str, outdir: pathlib.Path) -> dict:
                 nav = await page.evaluate("() => { const n = performance.getEntriesByType('navigation')[0]; return n ? {dcl: Math.round(n.domContentLoadedEventEnd), load: Math.round(n.loadEventEnd), ttfb: Math.round(n.responseStart)} : null }")
                 rec.update(nav or {})
                 rec["lcpMs"] = int(await page.evaluate("() => window.__lcp || 0"))
+                rec["cls"] = round(float(await page.evaluate("() => window.__cls || 0")), 3)
+                rec["requests"] = weight["requests"]
+                rec["kb"] = round(weight["bytes"] / 1024)
+                rec["imageKb"] = round(weight["imageBytes"] / 1024)
+                rec["thirdPartyRequests"] = weight["thirdParty"]
                 rec["scrollWidth"] = await page.evaluate("document.documentElement.scrollWidth")
                 rec["innerWidth"] = await page.evaluate("window.innerWidth")
                 rec["renderedTextChars"] = await page.evaluate("document.body ? document.body.innerText.length : 0")

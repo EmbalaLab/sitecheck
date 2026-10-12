@@ -55,6 +55,20 @@
     </div>
 
     <div class="col main">
+      {% if r.panels and r.panels.scores %}
+      <section class="panels">
+        {% for key, title_es, title_en in [("seo", "Google y SEO básico", "Google and SEO basics"), ("ai", "Listo para asistentes de IA", "Ready for AI assistants"), ("speed", "Velocidad y móvil", "Speed and mobile")] %}
+        {% set rows = r.panels[key] %}{% set sc = r.panels.scores[key] %}
+        <details class="panel" {% if key != "speed" %}open{% endif %}>
+          <summary><span class="ptitle"><span class="es">{{ title_es }}</span><span class="en">{{ title_en }}</span></span>{% if sc is not none %}<span class="score {{ 'good' if sc >= 80 else 'mid' if sc >= 50 else 'bad' }}">{{ sc }}/100</span>{% endif %}</summary>
+          <ul class="checks">
+            {% for row in rows %}<li class="{{ row.status }}"><span class="ic">{% if row.status == 'ok' %}✓{% elif row.status == 'warn' %}!{% elif row.status == 'fail' %}✕{% else %}–{% endif %}</span><span class="lbl"><span class="es">{{ row.es }}</span><span class="en">{{ row.en }}</span></span>{% if row.value %}<span class="val">{{ row.value }}</span>{% endif %}</li>{% endfor %}
+          </ul>
+        </details>
+        {% endfor %}
+        <p class="pnote"><span class="es">Puntuación = comprobaciones superadas sobre las que se pudieron hacer. No es una nota de Google; es nuestra lista, medida una vez.</span><span class="en">Score = checks passed over checks that could run. Not a Google grade; our list, measured once.</span></p>
+      </section>
+      {% endif %}
       {% if r.findings %}
       <h2 class="h"><span class="es">Qué encontramos, por orden de lo que cuesta</span><span class="en">What we found, in order of what it costs</span></h2>
       {% for f in r.findings %}
