@@ -83,9 +83,32 @@ async def healthz():
     return {"ok": True, "jobs": len(jobs)}
 
 
+EXAMPLE_IDS = [x.strip() for x in os.environ.get("EXAMPLE_IDS", "").split(",") if x.strip()]
+
+
+def _examples() -> list[dict]:
+    """Cards for the home page: real runs on this service, chosen by id (EXAMPLE_IDS). A card is shown only
+    while its result files still exist; nothing is fabricated for a missing run."""
+    out = []
+    for job_id in EXAMPLE_IDS:
+        d = DATA / job_id
+        try:
+            a = json.loads((d / "audit.json").read_text(encoding="utf-8"))
+            r = json.loads((d / "report.json").read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        if not (d / "index.html").exists():
+            continue
+        s = r.get("summary", {})
+        out.append({"id": job_id, "host": a.get("host"), "date": (a.get("checkedAt") or "")[:10], "verdict": s.get("verdict", {}),
+                    "counts": s.get("counts", {}), "scores": (r.get("panels") or {}).get("scores", {}), "reachable": a.get("reachable"),
+                    "shot": f"/r/{job_id}/phone-fold.png" if (d / "phone-fold.png").exists() else ""})
+    return out
+
+
 @app.get("/", response_class=HTMLResponse)
 async def home():
-    return env.get_template("home.html").render(css=(HERE / "static" / "app.css").read_text(encoding="utf-8"))
+    return env.get_template("home.html").render(css=(HERE / "static" / "app.css").read_text(encoding="utf-8"), examples=_examples())
 
 
 @app.post("/api/audit")

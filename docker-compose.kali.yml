@@ -13,6 +13,8 @@ services:
       DATA_DIR: /data
       CACHE_SECONDS: "21600"
       PER_IP_PER_HOUR: "5"
+      # Real runs shown as example cards on the home page (ids under /srv/data/sitecheck). A missing run is simply not shown.
+      EXAMPLE_IDS: "smlmkeq-OLA,fnlqk9gEh0g,3z884Yxx6ws,bXFXWZWLaGo"
     shm_size: "1g"
     networks:
       - docker_homelab

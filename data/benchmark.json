@@ -1,0 +1,353 @@
+{
+ "asOf": "2026-10-12",
+ "firstRun": "2026-10-12",
+ "region": "provincia de Málaga",
+ "nTotal": 80,
+ "n": 78,
+ "axes": {
+  "security": {
+   "mean": 82,
+   "median": 83,
+   "n": 78
+  },
+  "mobile": {
+   "mean": 95,
+   "median": 100,
+   "n": 78
+  },
+  "speed": {
+   "mean": 71,
+   "median": 75,
+   "n": 78
+  },
+  "seo": {
+   "mean": 83,
+   "median": 86,
+   "n": 78
+  },
+  "ai": {
+   "mean": 77,
+   "median": 78,
+   "n": 78
+  },
+  "contact": {
+   "mean": 54,
+   "median": 50,
+   "n": 78
+  }
+ },
+ "rows": {
+  "title": {
+   "pass": 55,
+   "n": 78,
+   "section": "seo"
+  },
+  "metaDesc": {
+   "pass": 53,
+   "n": 78,
+   "section": "seo"
+  },
+  "h1": {
+   "pass": 51,
+   "n": 78,
+   "section": "seo"
+  },
+  "h2": {
+   "pass": 72,
+   "n": 78,
+   "section": "seo"
+  },
+  "canonical": {
+   "pass": 65,
+   "n": 78,
+   "section": "seo"
+  },
+  "indexable": {
+   "pass": 78,
+   "n": 78,
+   "section": "seo"
+  },
+  "robots": {
+   "pass": 72,
+   "n": 78,
+   "section": "seo"
+  },
+  "sitemap": {
+   "pass": 67,
+   "n": 78,
+   "section": "seo"
+  },
+  "httpsRedirect": {
+   "pass": 71,
+   "n": 78,
+   "section": "seo"
+  },
+  "wwwAgree": {
+   "pass": 69,
+   "n": 78,
+   "section": "seo"
+  },
+  "lang": {
+   "pass": 76,
+   "n": 78,
+   "section": "seo"
+  },
+  "og": {
+   "pass": 44,
+   "n": 78,
+   "section": "seo"
+  },
+  "favicon": {
+   "pass": 0,
+   "n": 78,
+   "section": "seo"
+  },
+  "wordCount": {
+   "pass": 69,
+   "n": 78,
+   "section": "seo"
+  },
+  "imgAlt": {
+   "pass": 18,
+   "n": 76,
+   "section": "seo"
+  },
+  "bizSchema": {
+   "pass": 49,
+   "n": 78,
+   "section": "seo"
+  },
+  "hreflang": {
+   "pass": 24,
+   "n": 24,
+   "section": "seo"
+  },
+  "aiBots": {
+   "pass": 75,
+   "n": 78,
+   "section": "ai"
+  },
+  "textInHtml": {
+   "pass": 77,
+   "n": 78,
+   "section": "ai"
+  },
+  "llmsTxt": {
+   "pass": 21,
+   "n": 78,
+   "section": "ai"
+  },
+  "bizComplete": {
+   "pass": 17,
+   "n": 78,
+   "section": "ai"
+  },
+  "h1Clear": {
+   "pass": 51,
+   "n": 78,
+   "section": "ai"
+  },
+  "firstPara": {
+   "pass": 72,
+   "n": 78,
+   "section": "ai"
+  },
+  "landmarks": {
+   "pass": 60,
+   "n": 78,
+   "section": "ai"
+  },
+  "sameAs": {
+   "pass": 28,
+   "n": 58,
+   "section": "ai"
+  },
+  "ogChat": {
+   "pass": 44,
+   "n": 78,
+   "section": "ai"
+  },
+  "lcp": {
+   "pass": 65,
+   "n": 78,
+   "section": "speed"
+  },
+  "load": {
+   "pass": 64,
+   "n": 78,
+   "section": "speed"
+  },
+  "cls": {
+   "pass": 77,
+   "n": 78,
+   "section": "speed"
+  },
+  "weight": {
+   "pass": 13,
+   "n": 78,
+   "section": "speed"
+  },
+  "thirdParty": {
+   "pass": 38,
+   "n": 78,
+   "section": "speed"
+  },
+  "overflow": {
+   "pass": 78,
+   "n": 78,
+   "section": "speed"
+  },
+  "fontSize": {
+   "pass": 53,
+   "n": 78,
+   "section": "speed"
+  },
+  "compression": {
+   "pass": 74,
+   "n": 78,
+   "section": "speed"
+  },
+  "responseMs": {
+   "pass": 44,
+   "n": 78,
+   "section": "speed"
+  },
+  "breadcrumb": {
+   "pass": 27,
+   "n": 27,
+   "section": "seo"
+  },
+  "searchAction": {
+   "pass": 39,
+   "n": 39,
+   "section": "ai"
+  },
+  "faq": {
+   "pass": 8,
+   "n": 43,
+   "section": "ai"
+  },
+  "hsts": {
+   "pass": 23,
+   "n": 23,
+   "section": "speed"
+  }
+ },
+ "metrics": {
+  "lcpMs": {
+   "median": 900.0,
+   "p25": 516.0,
+   "p75": 1856.0,
+   "n": 77
+  },
+  "loadMs": {
+   "median": 1369.0,
+   "p25": 791.0,
+   "p75": 2424.0,
+   "n": 78
+  },
+  "kb": {
+   "median": 3458.0,
+   "p25": 2230.0,
+   "p75": 7595.0,
+   "n": 78
+  },
+  "responseMs": {
+   "median": 623.0,
+   "p25": 238.0,
+   "p75": 1654.0,
+   "n": 78
+  },
+  "cls": {
+   "median": 0.0,
+   "p25": 0.0,
+   "p75": 0.0,
+   "n": 78
+  }
+ },
+ "hosts": [
+  "agita.coop",
+  "airis.agency",
+  "aizualabs.com",
+  "alhaurintorresalud.es",
+  "anelis.com",
+  "asesmedia.com",
+  "belio.studio",
+  "boneluv.com",
+  "cocosolution.com",
+  "digitalay.es",
+  "dilusur.com",
+  "dynamicagencia.com",
+  "elkoko.es",
+  "enitecsl.com",
+  "ferreteriagomezalh.com",
+  "fmlmarketing.com",
+  "iaoperators.com",
+  "kuvikstudio.com",
+  "managa.es",
+  "mantra-internet.es",
+  "mdmarketing.es",
+  "neumaticoszurita.com",
+  "nimioestudio.com",
+  "parasoles.es",
+  "policlinicasanjuan.com",
+  "rompientestudio.com",
+  "rsteurope.com",
+  "simadesign.es",
+  "soamee.com",
+  "staminamarketing.com",
+  "supermediastudio.es",
+  "wannasherpa.com",
+  "webmarcablanca.com",
+  "webprogramacion.com",
+  "weloveweb.eu",
+  "whitebrand.site",
+  "www.agssolarenergy.com",
+  "www.altesurgsl.es",
+  "www.atelierdentalmalaga.com",
+  "www.automaticchoice.es",
+  "www.autotallersanchezromero.com",
+  "www.brcspain.com",
+  "www.clinicamunoz.net",
+  "www.codetia.com",
+  "www.digitarama.com",
+  "www.ducktoy.es",
+  "www.energiaslumilec.es",
+  "www.factorideas.com",
+  "www.fernandezycasquero.com",
+  "www.irudigital.com",
+  "www.ivmarketing.es",
+  "www.judelsa.com",
+  "www.lavanderiasonia.es",
+  "www.leymamarketingdigital.com",
+  "www.manceboasesores.com",
+  "www.mciproteccion.com",
+  "www.mediseo.es",
+  "www.motosgarrido.com",
+  "www.mueblesdecasa.net",
+  "www.neofincas.es",
+  "www.newdental.es",
+  "www.ounti.com",
+  "www.perezgarran.es",
+  "www.quattromalaga.com",
+  "www.recambiosserrano.com",
+  "www.solbyte.com",
+  "www.suministrosfesur.com",
+  "www.susanfo.com",
+  "www.tallerescarranque.com",
+  "www.talleressantana.com",
+  "www.tdspain.com",
+  "www.techostensadosmalaga.com",
+  "www.todoterrazas.es",
+  "www.toldosalvaro.com",
+  "www.topfactory.es",
+  "www.visionclick.es",
+  "www.visuallglasspergolas.es",
+  "www.wiidoomedia.com"
+ ],
+ "unreachable": [
+  "servicarsport.com",
+  "www.pinturasvipesa.es"
+ ],
+ "tool": "EmbalaLab SiteCheck 0.1"
+}

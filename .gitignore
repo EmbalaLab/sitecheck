@@ -1,4 +1,6 @@
-data/
+data/*
+!data/benchmark.json
+!data/benchmark-sites.txt
 runs/
 __pycache__/
 *.pyc

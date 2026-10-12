@@ -1,0 +1,12 @@
+<script>
+(function(){
+  var b=document.body,h=document.documentElement;
+  var setLang=function(l){b.setAttribute('data-lang',l);h.lang=l;document.querySelectorAll('.lang button').forEach(function(x){x.classList.toggle('on',x.dataset.lang===l)});try{localStorage.setItem('sc-lang',l)}catch(e){}};
+  document.querySelectorAll('.lang button').forEach(function(x){x.addEventListener('click',function(){setLang(x.dataset.lang)})});
+  var l='es';try{l=localStorage.getItem('sc-lang')||l}catch(e){}setLang(l);
+  /* theme: follows the system until the person taps the toggle; then light/dark is remembered */
+  var applyTheme=function(t){if(t){h.setAttribute('data-theme',t)}else{h.removeAttribute('data-theme')}};
+  var t=null;try{t=localStorage.getItem('sc-theme')||null}catch(e){}applyTheme(t);
+  var tb=document.getElementById('theme');if(tb){tb.addEventListener('click',function(){var dark=h.getAttribute('data-theme')==='dark'||(!h.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);var n=dark?'light':'dark';applyTheme(n);try{localStorage.setItem('sc-theme',n)}catch(e){}})}
+})();
+</script>
