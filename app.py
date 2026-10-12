@@ -17,6 +17,7 @@ import os
 import pathlib
 import re
 import secrets
+import shutil
 import time
 
 from fastapi import FastAPI, HTTPException, Request
@@ -24,7 +25,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Redirect
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from audit.engine import norm_host, run_audit
+from audit.engine import norm_host, render, run_audit
 from audit.findings import build_findings
 from audit.render import render_html
 
@@ -64,6 +65,22 @@ async def _worker(job_id: str):
             def prog(step):
                 job["step"] = step
             audit = await run_audit(job["host"], outdir, prog)
+            if audit.get("reachable") and not ((audit.get("render") or {}).get("phone") or {}).get("ok"):
+                # The browser step failed (e.g. a browser binary missing right after a deploy). Try once more;
+                # if it still fails, the job is an error: a card without the screenshot and the phone figures
+                # would be a half diagnosis presented as a whole one.
+                prog("render")
+                await asyncio.sleep(2)
+                try:
+                    audit["render"] = await render(audit["primaryUrl"], outdir)
+                except Exception as e:  # noqa: BLE001
+                    audit["render"] = {"error": f"{type(e).__name__}: {str(e)[:140]}"}
+                audit["render"].pop("html", None)
+                (outdir / "audit.json").write_text(json.dumps(audit, ensure_ascii=False, indent=1), encoding="utf-8")
+                if not ((audit.get("render") or {}).get("phone") or {}).get("ok"):
+                    shutil.rmtree(outdir, ignore_errors=True)
+                    by_host.pop(job["host"], None)
+                    raise RuntimeError("El navegador no pudo cargar la web en esta ejecución. Vuelva a intentarlo en un minuto. / The browser could not load the site on this run. Try again in a minute. " + str((audit.get("render") or {}).get("error") or ((audit.get("render") or {}).get("phone") or {}).get("error") or "")[:120])
             report = build_findings(audit)
             (outdir / "report.json").write_text(json.dumps(report, ensure_ascii=False), encoding="utf-8")
             render_html(audit, report, outdir, inline_images=False, file_base=f"/r/{job_id}/")

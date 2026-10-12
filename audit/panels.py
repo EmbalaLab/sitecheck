@@ -87,7 +87,9 @@ def build_panels(a: dict) -> dict:
         scored = [r for r in rows if r["status"] in pts]
         return round(100 * sum(pts[r["status"]] for r in scored) / len(scored)) if scored else None
 
-    scores = {"seo": score(S), "ai": score(A), "speed": score(P)}
+    # Without the browser measurement the speed card would be scored from compression, HSTS and server
+    # response alone: a number that looks like a speed score and is not one. It stays unmeasured instead.
+    scores = {"seo": score(S), "ai": score(A), "speed": score(P) if ph.get("ok") else None}
     return {"seo": S, "ai": A, "speed": P, "scores": scores, "axes": build_axes(a, scores)}
 
 
@@ -166,8 +168,8 @@ def build_axes(a: dict, scores: dict) -> dict:
     ] if page else []
     axes = {
         "security": {"score": _mean(sec), "parts": sec},
-        "mobile": {"score": _mean(mob), "parts": mob},
-        "speed": {"score": _mean(spd), "parts": spd},
+        "mobile": {"score": _mean(mob) if phone_ok else None, "parts": mob},   # both need the browser run
+        "speed": {"score": _mean(spd) if phone_ok else None, "parts": spd},
         "seo": {"score": scores.get("seo"), "parts": []},   # the SEO scorecard score (checks passed over checks that ran)
         "ai": {"score": scores.get("ai"), "parts": []},     # the AI-readiness scorecard score
         "contact": {"score": _mean(con), "parts": con},

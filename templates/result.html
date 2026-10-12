@@ -34,6 +34,9 @@
   <div><span class="es">Detalles</span><span class="en">Details</span><b>{{ r.summary.counts.low }}</b></div>
 </div>
 
+{% if a.reachable and not (a.render and a.render.phone and a.render.phone.ok) %}
+<p class="note empty partial"><span class="es"><strong>Ejecución incompleta.</strong> El navegador no pudo cargar la web en esta ejecución, así que faltan la captura y las medidas de móvil (velocidad, estabilidad, desplazamiento). Lo demás sí se midió. <a href="/?url={{ a.host }}&force=1">Volver a comprobar</a> para obtener el diagnóstico completo.</span><span class="en"><strong>Incomplete run.</strong> The browser could not load the site on this run, so the screenshot and the phone measurements (speed, stability, sideways scroll) are missing. Everything else was measured. <a href="/?url={{ a.host }}&force=1">Check again</a> for the complete diagnosis.</span></p>
+{% endif %}
 <section class="sec first">
   <div class="n">01<b><span class="es">Comparado con el estándar y la media local</span><span class="en">Compared with the standard and the local average</span></b>
     {% if c.radar %}<p class="caps"><span class="es">Seis áreas, de 0 a 100. Sólido: esta web. Línea: media local. Punteado: el estándar. Toque un vértice para ver qué se midió.</span><span class="en">Six areas, 0 to 100. Solid: this site. Line: local average. Dashed: the standard. Tap a vertex to see what was measured.</span></p>{% endif %}

@@ -16,7 +16,7 @@ services:
       CANONICAL_HOST: "webaudit.embalalab.com"
       LEGACY_HOSTS: "audit.embalalab.com"
       # Real runs shown as example cards on the home page (ids under /srv/data/sitecheck). A missing run is simply not shown.
-      EXAMPLE_IDS: "smlmkeq-OLA,fnlqk9gEh0g,3z884Yxx6ws,bXFXWZWLaGo"
+      EXAMPLE_IDS: "smlmkeq-OLA,fnlqk9gEh0g,dGd89ipPeSo,bXFXWZWLaGo"
     shm_size: "1g"
     networks:
       - docker_homelab
