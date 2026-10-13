@@ -1,41 +1,46 @@
-# SiteCheck — one-minute website diagnosis
+# SiteCheck
 
-Paste a URL, get a card: what is wrong with the home page, ordered by what it costs the business, in Spanish and English, with a phone screenshot, a radar chart against the standard and the local average, and the measured facts behind every finding. Public at webaudit.embalalab.com (a free tool by EmbalaLab; the old hostname audit.embalalab.com redirects there).
+Type a web address. Half a minute later you get a page that says what is wrong with the site's home page, in the order it costs the owner money, in Spanish or English. Live at [webaudit.embalalab.com](https://webaudit.embalalab.com).
 
-What it measures (home page only, one run, from the outside), shown as findings ordered by business cost plus three scorecards:
+## What a result looks like
 
-- **Google and SEO basics**: title and description length, one H1 and H2s, canonical consistency, noindex, robots.txt, sitemap (URL count, last modification), https and redirect, www consistency, `lang`, Open Graph, favicon, word count, image alt coverage, business structured data, breadcrumbs, hreflang.
-- **Ready for AI assistants**: robots.txt access for GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended, Applebot-Extended, Meta-ExternalAgent and others; text present without running scripts (raw vs rendered); `llms.txt`; completeness of the schema.org business card (address, phone, hours, sameAs, geo); FAQ (FAQPage schema or question headings); clear H1 and subheadings; first explanatory paragraph; semantic landmarks; sameAs profiles; WebSite SearchAction; Open Graph for chat previews.
-- **Speed and mobile**: LCP, full load, CLS, page weight and request count, third-party requests, sideways scroll, body font size, compression, HSTS, server response time, all on an emulated Pixel 7 and a desktop.
-- Plus: certificate validity and expiry, mail records (MX, SPF, DMARC), tap-to-call and WhatsApp links, phone numbers in text, forms, analytics and cookie banner, mixed content, a sample of internal links, console errors (site's own resources only), CMS and builder detection.
+A verdict in one sentence. Three scores out of 100: Google and SEO, AI assistants, speed and mobile. A radar chart with six axes that puts the site next to a reference line and next to the average of other local sites. A phone screenshot. Then the findings, each with three parts: what we saw, why it matters, how to check it yourself.
 
-Scores are checks passed over checks that could run, measured once. They are our list, not a Google grade.
+## What it checks
 
-## Charts
+The home page only, once, from outside, with no login. Roughly:
 
-- **Radar, six axes 0-100**: Security (https, redirect, certificate, mixed content, HSTS), Mobile (viewport, sideways scroll, font size, CLS), Speed (LCP, load, weight, server response), Google/SEO (the SEO scorecard), AI (the AI scorecard), Contact (tap-to-call, WhatsApp, phone in text, form or mailto). The formula is in `audit/panels.py` (`build_axes`): each axis is the mean of its parts scored 1 / 0.5 / 0; parts that could not be measured are left out, never counted as 0. Three series: this site; the **standard** (100 on every axis: a site that passes every check, with Google's published Core Web Vitals thresholds, LCP ≤ 2.5 s and CLS ≤ 0.1); and the **local average**.
-- **Speed bullets**: LCP, full load, weight and server response as bars against the thresholds (LCP per Google; the others are our scorecard limits) with the local median as a tick.
-- **Per-check pass rates**: each scorecard row shows the share of local sites that pass it.
+- Does it load over https, is the certificate valid, does http redirect.
+- How it looks and how long it takes on an emulated Pixel 7: LCP, full load, layout shift, page weight, font size, sideways scroll.
+- Can a visitor call or write on WhatsApp with one tap. Is the phone number on the page.
+- What Google reads: title, description, headings, canonical, robots, sitemap, structured data, Open Graph, favicon, alt text.
+- Whether AI crawlers (GPTBot, ClaudeBot, PerplexityBot and others) are allowed in, whether the text exists without running scripts, llms.txt, how complete the schema.org business card is, whether the page answers questions.
+- Mail records: MX, SPF, DMARC.
+- A sample of internal links, mixed content, script errors, the CMS and the page builder.
 
-The charts are inline SVG and HTML drawn from numbers computed in `audit/charts.py`; no chart library, no CDN. They work in light and dark and on a 412 px phone.
+It does not crawl past the home page, does not submit forms, and knows nothing about traffic or rankings. The result page says so.
 
-## The local average is measured, never typed in
+## The local average
 
-`data/benchmark.json` is produced by running this same engine over `data/benchmark-sites.txt` (public business websites in the province of Málaga, URLs only, no names or phone numbers):
+The grey line on the radar is the mean of sites we ran through this same engine. The list of URLs is in `data/benchmark-sites.txt`, the numbers in `data/benchmark.json`, with the count and the date. No average is ever typed in by hand. If the file is missing, the chart shows the site and the reference only.
 
 ```
-python -m audit.benchmark run data/benchmark-sites.txt ./bench-runs      # one browser at a time, ~25 s per site
-python -m audit.benchmark aggregate ./bench-runs data/benchmark.json     # per-axis means, per-check pass rates, speed medians, N, as-of
+python -m audit.benchmark run data/benchmark-sites.txt ./bench-runs
+python -m audit.benchmark aggregate ./bench-runs data/benchmark.json
 ```
 
-The result page's legend states N and the measurement date. If the file is missing, the chart shows only the site and the standard and says the average has not been measured; it never shows a made-up number. Sites that did not respond are counted in `nTotal` but excluded from every average.
-
-What it does not do: crawl beyond the home page, test forms, estimate traffic or rankings. The result page says so.
+## Run it
 
 ```
 pip install -r requirements.txt && playwright install chromium
-python -m audit.cli example.com ./runs/example   # -> audit.json, report.json, index.html, screenshots
-uvicorn app:app --port 3000                      # the web service; EXAMPLE_IDS=id1,id2 shows real runs as example cards on the home page
+python -m audit.cli example.com ./runs/example     # one site, writes index.html next to the data
+uvicorn app:app --port 3000                        # the web service
 ```
 
-Layout: `audit/engine.py` measures, `audit/findings.py` judges (ES/EN rules, no LLM), `audit/panels.py` builds the scorecards and the six axes, `audit/charts.py` computes chart geometry, `audit/benchmark.py` measures the local average, `audit/render.py` + `templates/` + `static/app.css` present. Tokens in app.css are copied from `StartLab/shared/design-system/embalalab/colors_and_type.css`.
+Docker: `docker-compose.kali.yml` runs it as one container with one browser at a time, five new runs per IP per hour, and a six hour cache per host.
+
+## Code
+
+`audit/engine.py` fetches and measures. `audit/findings.py` turns measurements into findings. `audit/panels.py` scores the three areas and the six radar axes. `audit/charts.py` computes the chart geometry (inline SVG, no library). `audit/benchmark.py` builds the local average. `templates/` and `static/app.css` are the page.
+
+MIT licence. Made by EmbalaLab in Alhaurín de la Torre, Málaga.
